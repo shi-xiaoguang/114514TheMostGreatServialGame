@@ -5,7 +5,7 @@
 ; 尺寸约定：测试地面 80m × 80m，XZ 覆盖范围为 -40 ~ +40，中心在原点。
 ; 分区约定（均挂在一个独立 Node3D 下，便于未来扩展与替换）：
 ;   AreaA_Start   平坦起点区（保持净空，仅放标牌与出生点）
-;   AreaB_Rocks   假山岩石区（内置图元组合成岩体，网格与碰撞形状一一对应）
+;   AreaB_Rocks   假山岩石区（8 级水平顶面石台主线，逐级 0.35m 向上；另含不可攀登岩体与低矮踏脚石）
 ;   AreaC_Parkour 跑酷区（低难度路线 + 挑战路线，台面高度差 0.3 / 0.5 / 0.7m，间隙 1 / 2 / 3m）
 ;   AreaD_Slopes  坡道区（15° / 30° / 44° 可站立坡道，另预留一处 60° 陡坡地形）
 ; 碰撞约定：可见网格与碰撞形状使用完全相同的尺寸与 Transform，不使用非等比缩放，避免出现空气墙或隐形障碍。
@@ -13,7 +13,7 @@
 ; 范围声明：本场景不含死亡、生命值、体力、存档、传送、攀爬等功能，也不包含自动迈台阶、坡地跳跃衰减、陡坡滑动等机制。
 ; 说明：Godot 编辑器保存场景时会丢弃本文件内的 ; 注释，此现象不影响场景功能。
 
-[gd_scene load_steps=60 format=3]
+[gd_scene load_steps=81 format=3]
 
 ; 玩家场景：复用既有第一人称玩家，不创建第二套玩家控制器
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
@@ -72,112 +72,167 @@ size = Vector2(80, 80)
 [sub_resource type="BoxShape3D" id="Box_ground"]
 size = Vector3(80, 1, 80)
 
-; ==================== 岩石网格（图元按半径分组共用；全部使用等比尺寸，保证与碰撞形状一致） ====================
+; ==================== 岩石网格（假山岩石区专用：关键落脚面一律为水平顶面的层叠石块） ====================
+; 设计约定：关键落脚面只用 BoxMesh（顶面严格水平 0°），并配同尺寸、同 Transform 的 BoxShape3D；
+;           圆柱 / 球体只用于「不可攀登岩体」与「低矮踏脚石」，球体 height 严格等于 2 × radius。
+; 命名约定：Rock_Base*（底座板）、Rock_Top*（台面板，节点名 T*_Top 供探针读取）、Rock_Flank*（侧翼石块）、
+;           Rock_Step*（低矮踏脚石）、Rock_Spire*（石笋）、Rock_Boulder*（圆滑巨岩）。
 
-; 半径 2.4m 的球体：height 严格等于 2 × radius，保证与 SphereShape3D 完全一致
-[sub_resource type="SphereMesh" id="Sphere_r24"]
+; ---- T1 出口石台：2.4m × 0.35m × 2.4m，自身顶面 0.35m 即第一级落脚面 ----
+; 关键约束一：T1 的落脚面 0.35m 是最低的一级，其余***所有底座板顶面必须低于 0.35m***，
+;             否则会在 T1 落面上形成一个只有几厘米的隐形台阶，把玩家卡住（已由探针实测复现）。
+; 关键约束二：相邻底座顶面至少相差 0.10m，使石脊上的落差是肉眼可见的自然石阶，而不是隐形阻挡。
+; 关键约束三：T1 与 T2 台面之间必须留出与其余各级相当的助跑间隙；
+;             实测 3.4m 的 T1 会与 T2 台面几乎相接（间隙不足 0.1m），助跑跳会被 T2 立面挡下，故收窄到 2.4m。
+[sub_resource type="BoxMesh" id="Rock_Base1"]
 material = SubResource("Mat_rock")
-radius = 2.4
-height = 4.8
-radial_segments = 24
-rings = 12
+size = Vector3(2.4, 0.35, 2.4)
 
-; 半径 2.0m 的球体
-[sub_resource type="SphereMesh" id="Sphere_r20"]
+; ---- T2 底座板：3.6m × 0.20m × 3.6m，顶面 0.20m ----
+[sub_resource type="BoxMesh" id="Rock_Base2"]
 material = SubResource("Mat_rock")
-radius = 2.0
-height = 4.0
-radial_segments = 24
-rings = 12
+size = Vector3(3.6, 0.2, 3.6)
 
-; 半径 1.5m 的球体
-[sub_resource type="SphereMesh" id="Sphere_r15"]
+; ---- T3 底座板：3.8m × 0.30m × 3.8m，顶面 0.30m ----
+[sub_resource type="BoxMesh" id="Rock_Base3"]
 material = SubResource("Mat_rock")
-radius = 1.5
-height = 3.0
-radial_segments = 24
-rings = 12
+size = Vector3(3.8, 0.3, 3.8)
 
-; 半径 1.25m 的球体
-[sub_resource type="SphereMesh" id="Sphere_r125"]
+; ---- T4 底座板：3.4m × 0.16m × 3.4m，顶面 0.16m ----
+[sub_resource type="BoxMesh" id="Rock_Base4"]
 material = SubResource("Mat_rock")
-radius = 1.25
-height = 2.5
-radial_segments = 24
-rings = 12
+size = Vector3(3.4, 0.16, 3.4)
 
-; 半径 1.05m 的球体
-[sub_resource type="SphereMesh" id="Sphere_r105"]
+; ---- T5 底座板：3.6m × 0.26m × 3.6m，顶面 0.26m ----
+[sub_resource type="BoxMesh" id="Rock_Base5"]
 material = SubResource("Mat_rock")
-radius = 1.05
-height = 2.1
-radial_segments = 24
-rings = 12
+size = Vector3(3.6, 0.26, 3.6)
 
-; 半径 0.95m、高 2.4m 的圆柱：作为倾斜的石柱，增加岩体的方向感
-[sub_resource type="CylinderMesh" id="Cyl_095_24"]
+; ---- T6 底座板：3.4m × 0.12m × 3.4m，顶面 0.12m ----
+[sub_resource type="BoxMesh" id="Rock_Base6"]
 material = SubResource("Mat_rock")
-top_radius = 0.95
-bottom_radius = 0.95
-height = 2.4
+size = Vector3(3.4, 0.12, 3.4)
+
+; ---- T7 底座板：3.8m × 0.24m × 3.8m，顶面 0.24m ----
+[sub_resource type="BoxMesh" id="Rock_Base7"]
+material = SubResource("Mat_rock")
+size = Vector3(3.8, 0.24, 3.8)
+
+; ---- T8 底座板：4.0m × 0.14m × 4.0m，顶面 0.14m ----
+[sub_resource type="BoxMesh" id="Rock_Base8"]
+material = SubResource("Mat_rock")
+size = Vector3(4, 0.14, 4)
+
+; ---- T2 台面板：2.0m × 0.51m × 2.0m，底面 0.19m（埋入底座 0.01m）、顶面 0.70m ----
+[sub_resource type="BoxMesh" id="Rock_Top2"]
+material = SubResource("Mat_rock")
+size = Vector3(2, 0.51, 2)
+
+; ---- T3 台面板：2.2m × 0.76m × 2.2m，底面 0.29m、顶面 1.05m ----
+[sub_resource type="BoxMesh" id="Rock_Top3"]
+material = SubResource("Mat_rock")
+size = Vector3(2.2, 0.76, 2.2)
+
+; ---- T4 台面板：1.8m × 1.25m × 1.8m，底面 0.15m、顶面 1.40m ----
+[sub_resource type="BoxMesh" id="Rock_Top4"]
+material = SubResource("Mat_rock")
+size = Vector3(1.8, 1.25, 1.8)
+
+; ---- T5 台面板：2.2m × 1.50m × 2.2m，底面 0.25m、顶面 1.75m ----
+[sub_resource type="BoxMesh" id="Rock_Top5"]
+material = SubResource("Mat_rock")
+size = Vector3(2.2, 1.5, 2.2)
+
+; ---- T6 台面板：2.0m × 1.99m × 2.0m，底面 0.11m、顶面 2.10m ----
+[sub_resource type="BoxMesh" id="Rock_Top6"]
+material = SubResource("Mat_rock")
+size = Vector3(2, 1.99, 2)
+
+; ---- T7 台面板：1.8m × 2.22m × 1.8m，底面 0.23m、顶面 2.45m ----
+[sub_resource type="BoxMesh" id="Rock_Top7"]
+material = SubResource("Mat_rock")
+size = Vector3(1.8, 2.22, 1.8)
+
+; ---- T8 台面板：2.4m × 2.67m × 2.4m，底面 0.13m、顶面 2.80m，最宽的一级观景台 ----
+[sub_resource type="BoxMesh" id="Rock_Top8"]
+material = SubResource("Mat_rock")
+size = Vector3(2.4, 2.67, 2.4)
+
+; ---- 侧翼石块 A：2.6m × 0.95m × 1.7m，落地自成矮石，用于打破台阶轮廓 ----
+[sub_resource type="BoxMesh" id="Rock_FlankA"]
+material = SubResource("Mat_rock")
+size = Vector3(2.6, 0.95, 1.7)
+
+; ---- 侧翼石块 B：1.8m × 0.70m × 2.6m ----
+[sub_resource type="BoxMesh" id="Rock_FlankB"]
+material = SubResource("Mat_rock")
+size = Vector3(1.8, 0.7, 2.6)
+
+; ---- 侧翼石块 C：2.2m × 1.20m × 2.0m ----
+[sub_resource type="BoxMesh" id="Rock_FlankC"]
+material = SubResource("Mat_rock")
+size = Vector3(2.2, 1.2, 2)
+
+; ---- 低矮踏脚石板：1.7m × 0.40m × 1.7m，顶面 0.40m ----
+[sub_resource type="BoxMesh" id="Rock_Step40"]
+material = SubResource("Mat_rock")
+size = Vector3(1.7, 0.4, 1.7)
+
+; ---- 石笋下段：半径 1.5m、高 2.6m 的圆柱，顶面 2.6m，不可直接跳上 ----
+[sub_resource type="CylinderMesh" id="Rock_Spire1"]
+material = SubResource("Mat_rock")
+top_radius = 1.5
+bottom_radius = 1.5
+height = 2.6
 radial_segments = 20
 
-; 半径 1.0m、高 1.6m 的圆柱：矮胖石块
-[sub_resource type="CylinderMesh" id="Cyl_10_16"]
+; ---- 石笋上段：半径 0.9m、高 1.8m，叠在下段之上，整体顶面 4.4m ----
+[sub_resource type="CylinderMesh" id="Rock_Spire2"]
 material = SubResource("Mat_rock")
-top_radius = 1.0
-bottom_radius = 1.0
-height = 1.6
+top_radius = 0.9
+bottom_radius = 0.9
+height = 1.8
 radial_segments = 20
 
-; 半径 1.0m、高 0.7m 的圆柱：顶面高度 0.7m，属于可跳上的矮岩顶
-[sub_resource type="CylinderMesh" id="Cyl_10_07"]
-material = SubResource("Mat_rock")
-top_radius = 1.0
-bottom_radius = 1.0
-height = 0.7
-radial_segments = 20
-
-; 半径 0.85m、高 0.5m 的圆柱：顶面高度 0.5m，属于较容易跳上的矮岩顶
-[sub_resource type="CylinderMesh" id="Cyl_085_05"]
+; ---- 低矮踏脚石（圆）：半径 0.85m、高 0.5m，顶面 0.5m，直径 1.7m 满足有效站立面积 ----
+[sub_resource type="CylinderMesh" id="Rock_StepRound05"]
 material = SubResource("Mat_rock")
 top_radius = 0.85
 bottom_radius = 0.85
 height = 0.5
 radial_segments = 20
 
-; 半径 0.9m、高 2.0m 的圆柱：远景石柱
-[sub_resource type="CylinderMesh" id="Cyl_09_20"]
+; ---- 低矮踏脚石（圆）：半径 0.85m、高 0.8m，顶面 0.8m ----
+[sub_resource type="CylinderMesh" id="Rock_StepRound08"]
 material = SubResource("Mat_rock")
-top_radius = 0.9
-bottom_radius = 0.9
-height = 2.0
+top_radius = 0.85
+bottom_radius = 0.85
+height = 0.8
 radial_segments = 20
 
-; 石板 2.4m × 0.5m × 2.0m：顶面 0.5m，可跳上
-[sub_resource type="BoxMesh" id="Box_slab_a"]
+; ---- 侧翼圆柱石：半径 0.95m、高 1.10m，顶面 1.10m ----
+[sub_resource type="CylinderMesh" id="Rock_FlankRound"]
 material = SubResource("Mat_rock")
-size = Vector3(2.4, 0.5, 2)
+top_radius = 0.95
+bottom_radius = 0.95
+height = 1.1
+radial_segments = 20
 
-; 石板 2.0m × 0.4m × 2.0m：顶面 0.4m，可跳上
-[sub_resource type="BoxMesh" id="Box_slab_b"]
+; ---- 不可攀登的圆滑巨岩主体：半径 2.2m 的球体，顶面 3.4m ----
+[sub_resource type="SphereMesh" id="Rock_Boulder1"]
 material = SubResource("Mat_rock")
-size = Vector3(2, 0.4, 2)
+radius = 2.2
+height = 4.4
+radial_segments = 24
+rings = 12
 
-; 石板 2.2m × 0.6m × 1.8m：顶面 0.6m，可跳上
-[sub_resource type="BoxMesh" id="Box_slab_c"]
+; ---- 圆滑巨岩副块：半径 1.3m 的球体 ----
+[sub_resource type="SphereMesh" id="Rock_Boulder2"]
 material = SubResource("Mat_rock")
-size = Vector3(2.2, 0.6, 1.8)
-
-; 小台阶石 1.6m × 0.3m × 1.6m：顶面 0.3m，作为岩体前的第一级落脚点
-[sub_resource type="BoxMesh" id="Box_step_a"]
-material = SubResource("Mat_rock")
-size = Vector3(1.6, 0.3, 1.6)
-
-; 小台阶石 1.8m × 0.35m × 1.4m：顶面 0.35m，作为岩体前的第一级落脚点
-[sub_resource type="BoxMesh" id="Box_step_b"]
-material = SubResource("Mat_rock")
-size = Vector3(1.8, 0.35, 1.4)
+radius = 1.3
+height = 2.6
+radial_segments = 24
+rings = 12
 
 ; ==================== 跑酷平台网格（台面 2.4m × 2.4m，落脚面积充足） ====================
 
@@ -233,64 +288,116 @@ size = Vector3(4, 3.8679504, 2)
 material = SubResource("Mat_ramp")
 size = Vector3(4, 4.8961524, 2)
 
-; ==================== 岩石碰撞形状（与岩石网格半径一一对应） ====================
+; ==================== 岩石碰撞形状（与岩石网格一一对应，尺寸严格相同） ====================
 
-[sub_resource type="SphereShape3D" id="SphereShape_r24"]
-radius = 2.4
+; 与 Rock_Base1 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_Base1"]
+size = Vector3(2.4, 0.35, 2.4)
 
-[sub_resource type="SphereShape3D" id="SphereShape_r20"]
-radius = 2.0
+; 与 Rock_Base2 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_Base2"]
+size = Vector3(3.6, 0.2, 3.6)
 
-[sub_resource type="SphereShape3D" id="SphereShape_r15"]
+; 与 Rock_Base3 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_Base3"]
+size = Vector3(3.8, 0.3, 3.8)
+
+; 与 Rock_Base4 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_Base4"]
+size = Vector3(3.4, 0.16, 3.4)
+
+; 与 Rock_Base5 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_Base5"]
+size = Vector3(3.6, 0.26, 3.6)
+
+; 与 Rock_Base6 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_Base6"]
+size = Vector3(3.4, 0.12, 3.4)
+
+; 与 Rock_Base7 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_Base7"]
+size = Vector3(3.8, 0.24, 3.8)
+
+; 与 Rock_Base8 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_Base8"]
+size = Vector3(4, 0.14, 4)
+
+; 与 Rock_Top2 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_Top2"]
+size = Vector3(2, 0.51, 2)
+
+; 与 Rock_Top3 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_Top3"]
+size = Vector3(2.2, 0.76, 2.2)
+
+; 与 Rock_Top4 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_Top4"]
+size = Vector3(1.8, 1.25, 1.8)
+
+; 与 Rock_Top5 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_Top5"]
+size = Vector3(2.2, 1.5, 2.2)
+
+; 与 Rock_Top6 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_Top6"]
+size = Vector3(2, 1.99, 2)
+
+; 与 Rock_Top7 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_Top7"]
+size = Vector3(1.8, 2.22, 1.8)
+
+; 与 Rock_Top8 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_Top8"]
+size = Vector3(2.4, 2.67, 2.4)
+
+; 与 Rock_FlankA 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_FlankA"]
+size = Vector3(2.6, 0.95, 1.7)
+
+; 与 Rock_FlankB 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_FlankB"]
+size = Vector3(1.8, 0.7, 2.6)
+
+; 与 Rock_FlankC 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_FlankC"]
+size = Vector3(2.2, 1.2, 2)
+
+; 与 Rock_Step40 完全一致
+[sub_resource type="BoxShape3D" id="RockShape_Step40"]
+size = Vector3(1.7, 0.4, 1.7)
+
+; 与 Rock_Spire1 的半径、高完全一致
+[sub_resource type="CylinderShape3D" id="RockShape_Spire1"]
 radius = 1.5
+height = 2.6
 
-[sub_resource type="SphereShape3D" id="SphereShape_r125"]
-radius = 1.25
+; 与 Rock_Spire2 的半径、高完全一致
+[sub_resource type="CylinderShape3D" id="RockShape_Spire2"]
+radius = 0.9
+height = 1.8
 
-[sub_resource type="SphereShape3D" id="SphereShape_r105"]
-radius = 1.05
-
-; 与 Cyl_095_24 的半径、高完全一致
-[sub_resource type="CylinderShape3D" id="CylShape_095_24"]
-radius = 0.95
-height = 2.4
-
-; 与 Cyl_10_16 的半径、高完全一致
-[sub_resource type="CylinderShape3D" id="CylShape_10_16"]
-radius = 1.0
-height = 1.6
-
-; 与 Cyl_10_07 的半径、高完全一致
-[sub_resource type="CylinderShape3D" id="CylShape_10_07"]
-radius = 1.0
-height = 0.7
-
-; 与 Cyl_085_05 的半径、高完全一致
-[sub_resource type="CylinderShape3D" id="CylShape_085_05"]
+; 与 Rock_StepRound05 的半径、高完全一致
+[sub_resource type="CylinderShape3D" id="RockShape_StepRound05"]
 radius = 0.85
 height = 0.5
 
-; 与 Cyl_09_20 的半径、高完全一致
-[sub_resource type="CylinderShape3D" id="CylShape_09_20"]
-radius = 0.9
-height = 2.0
+; 与 Rock_StepRound08 的半径、高完全一致
+[sub_resource type="CylinderShape3D" id="RockShape_StepRound08"]
+radius = 0.85
+height = 0.8
 
-; ==================== 岩石石板与台阶的碰撞形状（与网格尺寸一一对应） ====================
+; 与 Rock_FlankRound 的半径、高完全一致
+[sub_resource type="CylinderShape3D" id="RockShape_FlankRound"]
+radius = 0.95
+height = 1.1
 
-[sub_resource type="BoxShape3D" id="BoxShape_slab_a"]
-size = Vector3(2.4, 0.5, 2)
+; 与 Rock_Boulder1 的半径完全一致
+[sub_resource type="SphereShape3D" id="RockShape_Boulder1"]
+radius = 2.2
 
-[sub_resource type="BoxShape3D" id="BoxShape_slab_b"]
-size = Vector3(2, 0.4, 2)
-
-[sub_resource type="BoxShape3D" id="BoxShape_slab_c"]
-size = Vector3(2.2, 0.6, 1.8)
-
-[sub_resource type="BoxShape3D" id="BoxShape_step_a"]
-size = Vector3(1.6, 0.3, 1.6)
-
-[sub_resource type="BoxShape3D" id="BoxShape_step_b"]
-size = Vector3(1.8, 0.35, 1.4)
+; 与 Rock_Boulder2 的半径完全一致
+[sub_resource type="SphereShape3D" id="RockShape_Boulder2"]
+radius = 1.3
 
 ; ==================== 跑酷平台碰撞形状（与平台网格尺寸一一对应） ====================
 
@@ -361,11 +468,17 @@ text = "A 平坦起点区"
 font_size = 64
 outline_size = 16
 
-; ==================== AreaB_Rocks：假山岩石区 ====================
-; 布局说明（代管：玩法设计负责人，缺少专业可用性测试）：
-;   四组岩体分别位于 (-25, 6) / (-25, -5) / (-16.5, 1) / (-33, 6.5)，覆盖 x = -35 ~ -14 的西部区域；
-;   每组岩体由球体、圆柱与少量石板错位叠放，避免全部呈现为规则方块；
-;   每组岩体旁边配 0.3 ~ 0.7m 的矮岩顶，均可由当前 0.8m 的满按跳跃高度跳上去。
+; ==================== AreaB_Rocks：假山岩石区（WORLD-TEST-01 假山区优化） ====================
+; 布局说明（代管：玩法设计负责人，缺少专业复核与可用性测试）：
+;   主线 Route 共 8 级石台，自东（x≈-14）向西（x≈-35）逐级升高，每级顶面高差严格 0.35m：
+;     0.35 / 0.70 / 1.05 / 1.40 / 1.75 / 2.10 / 2.45 / 2.80m；
+;   每级落脚面为严格水平面（0°），边长 1.8 ~ 2.4m，均不小于 1.4m 的有效站立面积；
+;   每级由「底座板 + 台面板」两层绕 Y 轴不同角度旋转的石块错位叠成，避免规则方盒堆砌；
+;   底座板尺寸 3.4 ~ 4.0m、顶面高度互不相同（0.30 / 0.34 / 0.36 / 0.48 / 0.55 / 0.62m），
+;   相邻底座互相重叠 → 形成连续石脊（同时作为失手落地的缓冲，但不替代逐级跳跃测试）；
+;   相邻台面中心距约 3.2 ~ 3.4m，边到边水平间隙约 0.4 ~ 1.3m，行走速度下均可跨越；
+;   Flanks 为落地侧翼石块（打破台阶轮廓）；Steep 为刻意保留、不可攀登的陡峭岩体；
+;   Details 为低矮踏脚石，用于测试「从地面跳上较低岩石」。
 
 [node name="AreaB_Rocks" type="Node3D" parent="."]
 
@@ -375,201 +488,275 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 2.8, 8)
 pixel_size = 0.012
 billboard = 1
 alpha_cut = 1
-text = "B 假山岩石区"
+text = "B 假山岩石区（可逐级攀跳）"
 font_size = 64
 outline_size = 16
 
-; ---- 岩体组 B1（中心 -25, 0, 6）：大块球体 + 倾斜石柱 + 两级矮岩顶 ----
-[node name="ClusterB1" type="StaticBody3D" parent="AreaB_Rocks"]
+; ---- 主线：8 级石台；节点统一命名 T{i}_Top / T{i}_Base，供验证探针从场景实时读取台面中心、高度与朝向 ----
+[node name="Route" type="StaticBody3D" parent="AreaB_Rocks"]
 
-; 主岩：半径 2.4m 的球体，下半沉入地面，露出高度约 3.75m，用于绕行与接触
-[node name="B1_Main" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 1.35, 6)
-mesh = SubResource("Sphere_r24")
+; T1：整块大石台，顶面 0.35m，即从地面跳上的第一级（绕 Y 轴 -8°）
+[node name="T1_Top" type="MeshInstance3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9902681, 0, -0.1391731, 0, 1, 0, 0.1391731, 0, 0.9902681, -14.4, 0.175, 2.6)
+mesh = SubResource("Rock_Base1")
 
-[node name="B1_Main_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 1.35, 6)
-shape = SubResource("SphereShape_r24")
+[node name="T1_Top_Col" type="CollisionShape3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9902681, 0, -0.1391731, 0, 1, 0, 0.1391731, 0, 0.9902681, -14.4, 0.175, 2.6)
+shape = SubResource("RockShape_Base1")
 
-; 副岩一：半径 1.5m，错位叠在主岩西北侧
-[node name="B1_Sub1" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.4, 0.85, 4.3)
-mesh = SubResource("Sphere_r15")
+; T2：底座板（顶面 0.20m，绕 Y 轴 14°）+ 台面板（绕 Y 轴 -19°），台面顶 0.70m
+[node name="T2_Base" type="MeshInstance3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9702957, 0, 0.2419219, 0, 1, 0, -0.2419219, 0, 0.9702957, -17.3, 0.1, 1)
+mesh = SubResource("Rock_Base2")
 
-[node name="B1_Sub1_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.4, 0.85, 4.3)
-shape = SubResource("SphereShape_r15")
+[node name="T2_Base_Col" type="CollisionShape3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9702957, 0, 0.2419219, 0, 1, 0, -0.2419219, 0, 0.9702957, -17.3, 0.1, 1)
+shape = SubResource("RockShape_Base2")
 
-; 副岩二：半径 1.05m，错位叠在主岩东北侧
-[node name="B1_Sub2" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.9, 0.6, 7.4)
-mesh = SubResource("Sphere_r105")
+[node name="T2_Top" type="MeshInstance3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9455186, 0, -0.3255682, 0, 1, 0, 0.3255682, 0, 0.9455186, -17.3, 0.445, 1)
+mesh = SubResource("Rock_Top2")
 
-[node name="B1_Sub2_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.9, 0.6, 7.4)
-shape = SubResource("SphereShape_r105")
+[node name="T2_Top_Col" type="CollisionShape3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9455186, 0, -0.3255682, 0, 1, 0, 0.3255682, 0, 0.9455186, -17.3, 0.445, 1)
+shape = SubResource("RockShape_Top2")
 
-; 倾斜石柱：绕 Z 轴 13° 倾斜，打破纯球体的圆润感
-[node name="B1_Pillar" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB1"]
-transform = Transform3D(0.97437, -0.224951, 0, 0.224951, 0.97437, 0, 0, 0, 1, -23.5, 1.05, 4)
-mesh = SubResource("Cyl_095_24")
+; T3：底座板（顶面 0.30m，绕 Y 轴 -9°）+ 台面板（绕 Y 轴 11°），台面顶 1.05m
+[node name="T3_Base" type="MeshInstance3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9876883, 0, -0.1564345, 0, 1, 0, 0.1564345, 0, 0.9876883, -20.2, 0.15, -0.4)
+mesh = SubResource("Rock_Base3")
 
-[node name="B1_Pillar_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB1"]
-transform = Transform3D(0.97437, -0.224951, 0, 0.224951, 0.97437, 0, 0, 0, 1, -23.5, 1.05, 4)
-shape = SubResource("CylShape_095_24")
+[node name="T3_Base_Col" type="CollisionShape3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9876883, 0, -0.1564345, 0, 1, 0, 0.1564345, 0, 0.9876883, -20.2, 0.15, -0.4)
+shape = SubResource("RockShape_Base3")
 
-; 矮岩顶一：石板顶面 0.5m，可从地面直接跳上
-[node name="B1_LowSlab" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB1"]
-transform = Transform3D(0.9659258, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.9659258, -24.9, 0.25, 1.6)
-mesh = SubResource("Box_slab_a")
+[node name="T3_Top" type="MeshInstance3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9816272, 0, 0.190809, 0, 1, 0, -0.190809, 0, 0.9816272, -20.2, 0.67, -0.4)
+mesh = SubResource("Rock_Top3")
 
-[node name="B1_LowSlab_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB1"]
-transform = Transform3D(0.9659258, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.9659258, -24.9, 0.25, 1.6)
-shape = SubResource("BoxShape_slab_a")
+[node name="T3_Top_Col" type="CollisionShape3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9816272, 0, 0.190809, 0, 1, 0, -0.190809, 0, 0.9816272, -20.2, 0.67, -0.4)
+shape = SubResource("RockShape_Top3")
 
-; 矮岩顶二：小台阶石顶面 0.3m，作为上到 0.5m 石板前的第一级
-[node name="B1_LowStep" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB1"]
-transform = Transform3D(0.9848078, 0, -0.1736482, 0, 1, 0, 0.1736482, 0, 0.9848078, -26.3, 0.15, 0.3)
-mesh = SubResource("Box_step_a")
+; T4：底座板（顶面 0.16m，绕 Y 轴 21°）+ 台面板（绕 Y 轴 -23°），台面顶 1.40m
+[node name="T4_Base" type="MeshInstance3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9335804, 0, 0.3583679, 0, 1, 0, -0.3583679, 0, 0.9335804, -23.1, 0.08, 1.2)
+mesh = SubResource("Rock_Base4")
 
-[node name="B1_LowStep_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB1"]
-transform = Transform3D(0.9848078, 0, -0.1736482, 0, 1, 0, 0.1736482, 0, 0.9848078, -26.3, 0.15, 0.3)
-shape = SubResource("BoxShape_step_a")
+[node name="T4_Base_Col" type="CollisionShape3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9335804, 0, 0.3583679, 0, 1, 0, -0.3583679, 0, 0.9335804, -23.1, 0.08, 1.2)
+shape = SubResource("RockShape_Base4")
 
-; ---- 岩体组 B2（中心 -25, 0, -5）：大球 + 矮胖圆柱 + 0.7m 圆柱顶 + 0.4m 石板 ----
-[node name="ClusterB2" type="StaticBody3D" parent="AreaB_Rocks"]
+[node name="T4_Top" type="MeshInstance3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9205049, 0, -0.3907311, 0, 1, 0, 0.3907311, 0, 0.9205049, -23.1, 0.775, 1.2)
+mesh = SubResource("Rock_Top4")
 
-; 主岩：半径 2.0m 的球体，露出高度约 3.05m
-[node name="B2_Main" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 1.05, -5)
-mesh = SubResource("Sphere_r20")
+[node name="T4_Top_Col" type="CollisionShape3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9205049, 0, -0.3907311, 0, 1, 0, 0.3907311, 0, 0.9205049, -23.1, 0.775, 1.2)
+shape = SubResource("RockShape_Top4")
 
-[node name="B2_Main_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 1.05, -5)
-shape = SubResource("SphereShape_r20")
+; T5：底座板（顶面 0.26m，绕 Y 轴 -17°）+ 台面板（绕 Y 轴 16°），台面顶 1.75m
+[node name="T5_Base" type="MeshInstance3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9563048, 0, -0.2923717, 0, 1, 0, 0.2923717, 0, 0.9563048, -26, 0.13, 2.8)
+mesh = SubResource("Rock_Base5")
 
-; 副岩一：半径 1.25m
-[node name="B2_Sub1" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.9, 0.7, -3.8)
-mesh = SubResource("Sphere_r125")
+[node name="T5_Base_Col" type="CollisionShape3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9563048, 0, -0.2923717, 0, 1, 0, 0.2923717, 0, 0.9563048, -26, 0.13, 2.8)
+shape = SubResource("RockShape_Base5")
 
-[node name="B2_Sub1_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.9, 0.7, -3.8)
-shape = SubResource("SphereShape_r125")
+[node name="T5_Top" type="MeshInstance3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9612617, 0, 0.2756374, 0, 1, 0, -0.2756374, 0, 0.9612617, -26, 1, 2.8)
+mesh = SubResource("Rock_Top5")
 
-; 副岩二：半径 1.5m
-[node name="B2_Sub2" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.7, 0.85, -6)
-mesh = SubResource("Sphere_r15")
+[node name="T5_Top_Col" type="CollisionShape3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9612617, 0, 0.2756374, 0, 1, 0, -0.2756374, 0, 0.9612617, -26, 1, 2.8)
+shape = SubResource("RockShape_Top5")
 
-[node name="B2_Sub2_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.7, 0.85, -6)
-shape = SubResource("SphereShape_r15")
+; T6：底座板（顶面 0.12m，绕 Y 轴 7°）+ 台面板（绕 Y 轴 -6°），台面顶 2.10m
+[node name="T6_Base" type="MeshInstance3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9925462, 0, 0.1218693, 0, 1, 0, -0.1218693, 0, 0.9925462, -28.9, 0.06, 1)
+mesh = SubResource("Rock_Base6")
 
-; 矮胖圆柱：绕 Z 轴 -10° 倾斜
-[node name="B2_Boulder" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB2"]
-transform = Transform3D(0.9848078, 0.1736482, 0, -0.1736482, 0.9848078, 0, 0, 0, 1, -24.5, 0.6, -2.3)
-mesh = SubResource("Cyl_10_16")
+[node name="T6_Base_Col" type="CollisionShape3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9925462, 0, 0.1218693, 0, 1, 0, -0.1218693, 0, 0.9925462, -28.9, 0.06, 1)
+shape = SubResource("RockShape_Base6")
 
-[node name="B2_Boulder_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB2"]
-transform = Transform3D(0.9848078, 0.1736482, 0, -0.1736482, 0.9848078, 0, 0, 0, 1, -24.5, 0.6, -2.3)
-shape = SubResource("CylShape_10_16")
+[node name="T6_Top" type="MeshInstance3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9945219, 0, -0.1045285, 0, 1, 0, 0.1045285, 0, 0.9945219, -28.9, 1.105, 1)
+mesh = SubResource("Rock_Top6")
 
-; 矮岩顶：圆柱顶面 0.7m，接近满按跳跃高度的上限，属于岩区里较吃高度的一处落脚点
-[node name="B2_LowTop" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.2, 0.35, -6.6)
-mesh = SubResource("Cyl_10_07")
+[node name="T6_Top_Col" type="CollisionShape3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9945219, 0, -0.1045285, 0, 1, 0, 0.1045285, 0, 0.9945219, -28.9, 1.105, 1)
+shape = SubResource("RockShape_Top6")
 
-[node name="B2_LowTop_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.2, 0.35, -6.6)
-shape = SubResource("CylShape_10_07")
+; T7：底座板（顶面 0.24m，绕 Y 轴 26°）+ 台面板（绕 Y 轴 22°），台面顶 2.45m
+[node name="T7_Base" type="MeshInstance3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.898794, 0, 0.4383711, 0, 1, 0, -0.4383711, 0, 0.898794, -31.8, 0.12, -0.6)
+mesh = SubResource("Rock_Base7")
 
-; 矮岩顶：石板顶面 0.4m
-[node name="B2_LowSlab" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB2"]
-transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, -23.2, 0.2, -7.6)
-mesh = SubResource("Box_slab_b")
+[node name="T7_Base_Col" type="CollisionShape3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.898794, 0, 0.4383711, 0, 1, 0, -0.4383711, 0, 0.898794, -31.8, 0.12, -0.6)
+shape = SubResource("RockShape_Base7")
 
-[node name="B2_LowSlab_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB2"]
-transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, -23.2, 0.2, -7.6)
-shape = SubResource("BoxShape_slab_b")
+[node name="T7_Top" type="MeshInstance3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9271839, 0, 0.3746066, 0, 1, 0, -0.3746066, 0, 0.9271839, -31.8, 1.34, -0.6)
+mesh = SubResource("Rock_Top7")
 
-; ---- 岩体组 B3（中心 -16.5, 0, 1）：靠近起点区的小型岩体，方便快速试跳 ----
-[node name="ClusterB3" type="StaticBody3D" parent="AreaB_Rocks"]
+[node name="T7_Top_Col" type="CollisionShape3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9271839, 0, 0.3746066, 0, 1, 0, -0.3746066, 0, 0.9271839, -31.8, 1.34, -0.6)
+shape = SubResource("RockShape_Top7")
 
-; 主岩：半径 1.5m
-[node name="B3_Main" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.5, 0.85, 1)
-mesh = SubResource("Sphere_r15")
+; T8：最宽的一级观景台（2.4m），底座板（顶面 0.14m，绕 Y 轴 -12°）+ 台面板（绕 Y 轴 -15°），台面顶 2.80m
+[node name="T8_Base" type="MeshInstance3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9781476, 0, -0.2079117, 0, 1, 0, 0.2079117, 0, 0.9781476, -34.7, 0.07, 1)
+mesh = SubResource("Rock_Base8")
 
-[node name="B3_Main_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.5, 0.85, 1)
-shape = SubResource("SphereShape_r15")
+[node name="T8_Base_Col" type="CollisionShape3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9781476, 0, -0.2079117, 0, 1, 0, 0.2079117, 0, 0.9781476, -34.7, 0.07, 1)
+shape = SubResource("RockShape_Base8")
 
-; 副岩：半径 1.05m
-[node name="B3_Sub1" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.9, 0.6, 2)
-mesh = SubResource("Sphere_r105")
+[node name="T8_Top" type="MeshInstance3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9659258, 0, -0.258819, 0, 1, 0, 0.258819, 0, 0.9659258, -34.7, 1.465, 1)
+mesh = SubResource("Rock_Top8")
 
-[node name="B3_Sub1_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.9, 0.6, 2)
-shape = SubResource("SphereShape_r105")
+[node name="T8_Top_Col" type="CollisionShape3D" parent="AreaB_Rocks/Route"]
+transform = Transform3D(0.9659258, 0, -0.258819, 0, 1, 0, 0.258819, 0, 0.9659258, -34.7, 1.465, 1)
+shape = SubResource("RockShape_Top8")
 
-; 矮岩顶：圆柱顶面 0.5m
-[node name="B3_LowTop" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0.25, 1.8)
-mesh = SubResource("Cyl_085_05")
+; ---- 侧翼石块：全部落地自成矮石，绕 Y 轴大角度旋转，用于打破「整齐台阶」轮廓 ----
+[node name="Flanks" type="StaticBody3D" parent="AreaB_Rocks"]
 
-[node name="B3_LowTop_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0.25, 1.8)
-shape = SubResource("CylShape_085_05")
+; 侧翼 A：顶面 0.95m，绕 Y 轴 34°
+[node name="SideA" type="MeshInstance3D" parent="AreaB_Rocks/Flanks"]
+transform = Transform3D(0.8290376, 0, 0.5591929, 0, 1, 0, -0.5591929, 0, 0.8290376, -19, 0.475, 5.2)
+mesh = SubResource("Rock_FlankA")
 
-; 矮岩顶：小台阶石顶面 0.35m
-[node name="B3_LowStep" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB3"]
-transform = Transform3D(0.9396926, 0, -0.3420201, 0, 1, 0, 0.3420201, 0, 0.9396926, -16.2, 0.175, -0.6)
-mesh = SubResource("Box_step_b")
+[node name="SideA_Col" type="CollisionShape3D" parent="AreaB_Rocks/Flanks"]
+transform = Transform3D(0.8290376, 0, 0.5591929, 0, 1, 0, -0.5591929, 0, 0.8290376, -19, 0.475, 5.2)
+shape = SubResource("RockShape_FlankA")
 
-[node name="B3_LowStep_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB3"]
-transform = Transform3D(0.9396926, 0, -0.3420201, 0, 1, 0, 0.3420201, 0, 0.9396926, -16.2, 0.175, -0.6)
-shape = SubResource("BoxShape_step_b")
+; 侧翼 B：顶面 0.70m，绕 Y 轴 -38°
+[node name="SideB" type="MeshInstance3D" parent="AreaB_Rocks/Flanks"]
+transform = Transform3D(0.7880108, 0, -0.6156615, 0, 1, 0, 0.6156615, 0, 0.7880108, -24.6, 0.35, -2.2)
+mesh = SubResource("Rock_FlankB")
 
-; ---- 岩体组 B4（中心 -33, 0, 6.5）：西侧边缘的一组岩体，用于拉开岩石区的纵深 ----
-[node name="ClusterB4" type="StaticBody3D" parent="AreaB_Rocks"]
+[node name="SideB_Col" type="CollisionShape3D" parent="AreaB_Rocks/Flanks"]
+transform = Transform3D(0.7880108, 0, -0.6156615, 0, 1, 0, 0.6156615, 0, 0.7880108, -24.6, 0.35, -2.2)
+shape = SubResource("RockShape_FlankB")
 
-; 主岩：半径 2.0m
-[node name="B4_Main" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 1.05, 6.5)
-mesh = SubResource("Sphere_r20")
+; 侧翼 C：顶面 1.20m，绕 Y 轴 -27°
+[node name="SideC" type="MeshInstance3D" parent="AreaB_Rocks/Flanks"]
+transform = Transform3D(0.8910065, 0, -0.4539905, 0, 1, 0, 0.4539905, 0, 0.8910065, -29.4, 0.6, -2.4)
+mesh = SubResource("Rock_FlankC")
 
-[node name="B4_Main_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 1.05, 6.5)
-shape = SubResource("SphereShape_r20")
+[node name="SideC_Col" type="CollisionShape3D" parent="AreaB_Rocks/Flanks"]
+transform = Transform3D(0.8910065, 0, -0.4539905, 0, 1, 0, 0.4539905, 0, 0.8910065, -29.4, 0.6, -2.4)
+shape = SubResource("RockShape_FlankC")
 
-; 副岩：半径 1.25m
-[node name="B4_Sub1" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31.3, 0.7, 5.4)
-mesh = SubResource("Sphere_r125")
+; 侧翼 D：圆柱石块，顶面 1.10m，直径 1.9m
+[node name="SideD" type="MeshInstance3D" parent="AreaB_Rocks/Flanks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.4, 0.55, 4.4)
+mesh = SubResource("Rock_FlankRound")
 
-[node name="B4_Sub1_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31.3, 0.7, 5.4)
-shape = SubResource("SphereShape_r125")
+[node name="SideD_Col" type="CollisionShape3D" parent="AreaB_Rocks/Flanks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.4, 0.55, 4.4)
+shape = SubResource("RockShape_FlankRound")
 
-; 石柱：绕 Z 轴 10° 倾斜
-[node name="B4_Pillar" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB4"]
-transform = Transform3D(0.9848078, -0.1736482, 0, 0.1736482, 0.9848078, 0, 0, 0, 1, -34.6, 0.9, 7.4)
-mesh = SubResource("Cyl_09_20")
+; ---- 不可攀登岩体：刻意保留陡峭、圆滑的形态，作为未来攀爬 / 滑坡机制的测试对象（本轮不实现相关玩法） ----
+[node name="Steep" type="StaticBody3D" parent="AreaB_Rocks"]
 
-[node name="B4_Pillar_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB4"]
-transform = Transform3D(0.9848078, -0.1736482, 0, 0.1736482, 0.9848078, 0, 0, 0, 1, -34.6, 0.9, 7.4)
-shape = SubResource("CylShape_09_20")
+; 石笋下段：圆柱顶面 2.6m，远高于 0.8m 满按跳跃高度，无法直接跳上
+[node name="Spire_Low" type="MeshInstance3D" parent="AreaB_Rocks/Steep"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 1.3, -6.2)
+mesh = SubResource("Rock_Spire1")
 
-; 矮岩顶：石板顶面 0.6m
-[node name="B4_LowSlab" type="MeshInstance3D" parent="AreaB_Rocks/ClusterB4"]
-transform = Transform3D(0.9063078, 0, 0.4226183, 0, 1, 0, -0.4226183, 0, 0.9063078, -33.4, 0.3, 4)
-mesh = SubResource("Box_slab_c")
+[node name="Spire_Low_Col" type="CollisionShape3D" parent="AreaB_Rocks/Steep"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 1.3, -6.2)
+shape = SubResource("RockShape_Spire1")
 
-[node name="B4_LowSlab_Col" type="CollisionShape3D" parent="AreaB_Rocks/ClusterB4"]
-transform = Transform3D(0.9063078, 0, 0.4226183, 0, 1, 0, -0.4226183, 0, 0.9063078, -33.4, 0.3, 4)
-shape = SubResource("BoxShape_slab_c")
+; 石笋上段：叠在下段之上，整体高 4.4m，进一步强化「不可轻易攀登」
+[node name="Spire_High" type="MeshInstance3D" parent="AreaB_Rocks/Steep"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 3.5, -6.2)
+mesh = SubResource("Rock_Spire2")
+
+[node name="Spire_High_Col" type="CollisionShape3D" parent="AreaB_Rocks/Steep"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 3.5, -6.2)
+shape = SubResource("RockShape_Spire2")
+
+; 圆滑巨岩主体：半径 2.2m 的球体，顶面 3.4m；曲面顶面刻意保留，与可攀石台形成对比
+[node name="Boulder_Main" type="MeshInstance3D" parent="AreaB_Rocks/Steep"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.5, 1.2, -6.4)
+mesh = SubResource("Rock_Boulder1")
+
+[node name="Boulder_Main_Col" type="CollisionShape3D" parent="AreaB_Rocks/Steep"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.5, 1.2, -6.4)
+shape = SubResource("RockShape_Boulder1")
+
+; 巨岩副块：半径 1.3m 的球体，与主体融合成一整块圆滑岩体
+[node name="Boulder_Side" type="MeshInstance3D" parent="AreaB_Rocks/Steep"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31.6, 0.7, -5.2)
+mesh = SubResource("Rock_Boulder2")
+
+[node name="Boulder_Side_Col" type="CollisionShape3D" parent="AreaB_Rocks/Steep"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31.6, 0.7, -5.2)
+shape = SubResource("RockShape_Boulder2")
+
+; ---- 低矮踏脚石：顶面 0.4 ~ 0.8m 且全部为水平面，用于测试「从地面跳上较低岩石」 ----
+[node name="Details" type="StaticBody3D" parent="AreaB_Rocks"]
+
+; 踏脚石 A：圆柱，顶面 0.5m；刻意与 T1 台面保持不小于 3.25m 的中心距，避免其 0.15m 的落差侵入 T1 落面
+[node name="Step_A" type="MeshInstance3D" parent="AreaB_Rocks/Details"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.9, 0.25, 5.2)
+mesh = SubResource("Rock_StepRound05")
+
+[node name="Step_A_Col" type="CollisionShape3D" parent="AreaB_Rocks/Details"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.9, 0.25, 5.2)
+shape = SubResource("RockShape_StepRound05")
+
+; 踏脚石 B：圆柱，顶面 0.8m
+[node name="Step_B" type="MeshInstance3D" parent="AreaB_Rocks/Details"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.6, 0.4, 4.2)
+mesh = SubResource("Rock_StepRound08")
+
+[node name="Step_B_Col" type="CollisionShape3D" parent="AreaB_Rocks/Details"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.6, 0.4, 4.2)
+shape = SubResource("RockShape_StepRound08")
+
+; 踏脚石 C：方板，顶面 0.4m，绕 Y 轴 33°
+[node name="Step_C" type="MeshInstance3D" parent="AreaB_Rocks/Details"]
+transform = Transform3D(0.8386706, 0, 0.544639, 0, 1, 0, -0.544639, 0, 0.8386706, -19.4, 0.2, -2.6)
+mesh = SubResource("Rock_Step40")
+
+[node name="Step_C_Col" type="CollisionShape3D" parent="AreaB_Rocks/Details"]
+transform = Transform3D(0.8386706, 0, 0.544639, 0, 1, 0, -0.544639, 0, 0.8386706, -19.4, 0.2, -2.6)
+shape = SubResource("RockShape_Step40")
+
+; 踏脚石 D：圆柱，顶面 0.5m
+[node name="Step_D" type="MeshInstance3D" parent="AreaB_Rocks/Details"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.6, 0.25, 4.2)
+mesh = SubResource("Rock_StepRound05")
+
+[node name="Step_D_Col" type="CollisionShape3D" parent="AreaB_Rocks/Details"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.6, 0.25, 4.2)
+shape = SubResource("RockShape_StepRound05")
+
+; 踏脚石 E：方板，顶面 0.4m，绕 Y 轴 22°
+[node name="Step_E" type="MeshInstance3D" parent="AreaB_Rocks/Details"]
+transform = Transform3D(0.9271839, 0, 0.3746066, 0, 1, 0, -0.3746066, 0, 0.9271839, -33.6, 0.2, -2.6)
+mesh = SubResource("Rock_Step40")
+
+[node name="Step_E_Col" type="CollisionShape3D" parent="AreaB_Rocks/Details"]
+transform = Transform3D(0.9271839, 0, 0.3746066, 0, 1, 0, -0.3746066, 0, 0.9271839, -33.6, 0.2, -2.6)
+shape = SubResource("RockShape_Step40")
+
+; 踏脚石 F：圆柱，顶面 0.8m
+[node name="Step_F" type="MeshInstance3D" parent="AreaB_Rocks/Details"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36, 0.4, 4.8)
+mesh = SubResource("Rock_StepRound08")
+
+[node name="Step_F_Col" type="CollisionShape3D" parent="AreaB_Rocks/Details"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36, 0.4, 4.8)
+shape = SubResource("RockShape_StepRound08")
 
 ; ==================== AreaC_Parkour：小型跑酷区 ====================
 ; 布局说明（代管：玩法设计负责人，缺少专业可用性测试）：
