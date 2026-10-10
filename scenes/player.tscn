@@ -1,0 +1,31 @@
+; Robinson —— 第一人称玩家场景（任务编号 PLAYER-01：第一人称基础移动与观察）
+; 生成方式：节点骨架由 Godot MCP 创建，脚本引用、碰撞形状、枢轴高度与相机参数由场景文件补齐。
+; 原点约定：根节点 Player 的原点位于玩家脚底，脚底到头顶的站立总高为 1.80 米。
+; 说明：Godot 编辑器保存场景时会丢弃本文件内的 ; 注释，此现象不影响场景功能。
+
+[gd_scene load_steps=3 format=3]
+
+; 玩家控制器脚本：移动、重力与视角逻辑全部集中在此脚本
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
+
+; 站立碰撞体：胶囊总高 1.80 米（含两端半球）、半径 0.35 米，满足引擎约束 height ≥ 2 × radius
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.35
+height = 1.8
+
+; 玩家实体：CharacterBody3D；原点在脚底，移动与视角逻辑由挂载脚本承担
+[node name="Player" type="CharacterBody3D" unique_id=826548767]
+script = ExtResource("1_player")
+
+; 碰撞形状：整体上移 0.90 米（即 1.80 ÷ 2），使胶囊底面正好落在脚底所在的 Y = 0
+[node name="Collision" type="CollisionShape3D" parent="." unique_id=996069726]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+; 头部枢轴：局部上移 1.65 米，仅承担摄像机的上下俯仰
+[node name="Head" type="Node3D" parent="." unique_id=186703548]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, 0)
+
+; 第一人称相机：视线高度即枢轴高度 1.65 米；置为当前相机，用于替代原固定观察相机
+[node name="Camera" type="Camera3D" parent="Head" unique_id=1711049857]
+current = true

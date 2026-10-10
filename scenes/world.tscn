@@ -1,0 +1,64 @@
+; Robinson —— 世界场景（开发步骤 01：创建第一块 3D 地面；PLAYER-01：加入第一人称玩家）
+; 生成方式：节点骨架由 Godot MCP 创建，Mesh / Shape / 材质 / 光照参数由场景文件补齐。
+; 说明：Godot 编辑器保存场景时会丢弃本文件内的 ; 注释，此现象不影响场景功能。
+
+[gd_scene load_steps=8 format=3]
+
+; 玩家场景：由 PLAYER-01 引入，替代本场景原有的固定观察相机
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
+
+; 地面网格：24m × 24m 的 PlaneMesh，默认躺在 XZ 平面、中心在原点、法线朝 +Y，因此地表高度恰为 Y = 0
+[sub_resource type="PlaneMesh" id="PlaneMesh_ground"]
+size = Vector2(24, 24)
+
+; 地面材质：仅使用内置 StandardMaterial3D 的纯色，不加载任何外部贴图
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
+albedo_color = Color(0.44, 0.58, 0.34, 1)
+roughness = 1.0
+
+; 地面碰撞形状：24m × 1m × 24m 的 Box，XZ 覆盖范围与网格完全一致（-12 ~ +12）
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
+size = Vector3(24, 1, 24)
+
+; 天空材质：程序化天空，同样不需要任何外部贴图
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_top_color = Color(0.32, 0.51, 0.78, 1)
+sky_horizon_color = Color(0.72, 0.79, 0.87, 1)
+ground_bottom_color = Color(0.18, 0.18, 0.2, 1)
+ground_horizon_color = Color(0.72, 0.79, 0.87, 1)
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+; 环境：以天空作为背景与环境光源，避免地面背光面全黑，便于确认地面是否可见
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 2
+sky = SubResource("Sky_main")
+
+[node name="World" type="Node3D" unique_id=1684747960]
+
+; 可见地面网格：保持默认 Transform（位于原点），地表自然落在 Y = 0
+[node name="Ground" type="MeshInstance3D" parent="." unique_id=853457763]
+mesh = SubResource("PlaneMesh_ground")
+surface_material_override/0 = SubResource("StandardMaterial3D_ground")
+
+; 地面碰撞体：整体下移 0.5m，使 1m 厚 Box 的顶面正好落在 Y = 0，与网格地表严格重合
+[node name="GroundBody" type="StaticBody3D" parent="." unique_id=1486175703]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+; 碰撞形状节点本身不再偏移，尺寸与位置全部由 Shape 与父节点决定
+[node name="GroundCollision" type="CollisionShape3D" parent="GroundBody" unique_id=1721384412]
+shape = SubResource("BoxShape3D_ground")
+
+; 平行光：绕 Y 轴 -30°、绕 X 轴 -50° 组合旋转，光线自上方约 50° 高度角斜射向地面
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=2019640854]
+transform = Transform3D(0.866025, 0.383022, -0.321394, 0, 0.642788, 0.766044, 0.5, -0.663414, 0.55667, 0, 0, 0)
+shadow_enabled = true
+
+; 玩家：player.tscn 的实例，出生点位于地面中心正上方 0.10 米，出生后由重力落地并站在 Y = 0 的地面上
+; 该节点取代了开发步骤 01 的固定观察相机，运行时画面由玩家的第一人称相机呈现
+[node name="Player" parent="." instance=ExtResource("1_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1232283406]
+environment = SubResource("Environment_main")
