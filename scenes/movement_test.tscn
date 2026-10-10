@@ -13,7 +13,7 @@
 ; 范围声明：本场景不含死亡、生命值、体力、存档、传送、攀爬等功能，也不包含自动迈台阶、坡地跳跃衰减、陡坡滑动等机制。
 ; 说明：Godot 编辑器保存场景时会丢弃本文件内的 ; 注释，此现象不影响场景功能。
 
-[gd_scene load_steps=81 format=3]
+[gd_scene load_steps=110 format=3]
 
 ; 玩家场景：复用既有第一人称玩家，不创建第二套玩家控制器
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
@@ -427,6 +427,132 @@ size = Vector3(4, 3.8679504, 2)
 
 [sub_resource type="BoxShape3D" id="BoxShape_pad60"]
 size = Vector3(4, 4.8961524, 2)
+
+; ==================== AreaE 移动校准测试区 专用资源（WORLD-TEST-02） ====================
+; 约定一：每个可见体都配一个"尺寸完全相同、Transform 完全相同"的碰撞形状，保证 Mesh 与 Collision 严格一致。
+; 约定二：只使用内置 BoxMesh / CylinderMesh / BoxShape3D / CylinderShape3D，不引入任何外部资源。
+; 约定三：E4 坡体与坡顶平台直接复用 AreaD 的既有 15° 坡资源，因此不在此处重复定义。
+
+; 校准区专用纯色材质：偏蓝紫，便于在场景中一眼识别 AreaE（E3 岩石仍用 Mat_rock，E4 坡体仍用 Mat_ramp）
+[sub_resource type="StandardMaterial3D" id="Mat_calib"]
+albedo_color = Color(0.52, 0.55, 0.72, 1)
+roughness = 0.9
+
+; ---- E1 小障碍高度测试线：5 级水平台阶，平面一律 3m × 3m，只有高度不同（0.05 / 0.10 / 0.15 / 0.20 / 0.30m）----
+[sub_resource type="BoxMesh" id="E1Step005_Mesh"]
+material = SubResource("Mat_calib")
+size = Vector3(3, 0.05, 3)
+
+[sub_resource type="BoxShape3D" id="E1Step005_Shape"]
+size = Vector3(3, 0.05, 3)
+
+[sub_resource type="BoxMesh" id="E1Step010_Mesh"]
+material = SubResource("Mat_calib")
+size = Vector3(3, 0.1, 3)
+
+[sub_resource type="BoxShape3D" id="E1Step010_Shape"]
+size = Vector3(3, 0.1, 3)
+
+[sub_resource type="BoxMesh" id="E1Step015_Mesh"]
+material = SubResource("Mat_calib")
+size = Vector3(3, 0.15, 3)
+
+[sub_resource type="BoxShape3D" id="E1Step015_Shape"]
+size = Vector3(3, 0.15, 3)
+
+[sub_resource type="BoxMesh" id="E1Step020_Mesh"]
+material = SubResource("Mat_calib")
+size = Vector3(3, 0.2, 3)
+
+[sub_resource type="BoxShape3D" id="E1Step020_Shape"]
+size = Vector3(3, 0.2, 3)
+
+[sub_resource type="BoxMesh" id="E1Step030_Mesh"]
+material = SubResource("Mat_calib")
+size = Vector3(3, 0.3, 3)
+
+[sub_resource type="BoxShape3D" id="E1Step030_Shape"]
+size = Vector3(3, 0.3, 3)
+
+; ---- E1-FLAT_BUMP 连续地形凸起：每处 = 30°上升段 + 水平顶部（长 0.6m）+ 30°下降段 ----
+; 几何推导：30° 时水平投影 R = 高度 / tan30°；坡板厚 0.2m、宽 3m；坡板沿斜面的长度 = 2 × 高度。
+; 因此 0.05 / 0.10 / 0.15m 三种高度分别需要长度 0.1 / 0.2 / 0.3m 的坡板，另加一块共用的 0.6m 水平顶部板。
+[sub_resource type="BoxMesh" id="E1Bump005_Mesh"]
+material = SubResource("Mat_calib")
+size = Vector3(0.1, 0.2, 3)
+
+[sub_resource type="BoxShape3D" id="E1Bump005_Shape"]
+size = Vector3(0.1, 0.2, 3)
+
+[sub_resource type="BoxMesh" id="E1Bump010_Mesh"]
+material = SubResource("Mat_calib")
+size = Vector3(0.2, 0.2, 3)
+
+[sub_resource type="BoxShape3D" id="E1Bump010_Shape"]
+size = Vector3(0.2, 0.2, 3)
+
+[sub_resource type="BoxMesh" id="E1Bump015_Mesh"]
+material = SubResource("Mat_calib")
+size = Vector3(0.3, 0.2, 3)
+
+[sub_resource type="BoxShape3D" id="E1Bump015_Shape"]
+size = Vector3(0.3, 0.2, 3)
+
+[sub_resource type="BoxMesh" id="E1BumpTop_Mesh"]
+material = SubResource("Mat_calib")
+size = Vector3(0.6, 0.2, 3)
+
+[sub_resource type="BoxShape3D" id="E1BumpTop_Shape"]
+size = Vector3(0.6, 0.2, 3)
+
+; ---- E2 地面接缝：两块抬升板，平面 4m × 4m，顶面 0.02m 与 0.05m ----
+[sub_resource type="BoxMesh" id="E2Seam002_Mesh"]
+material = SubResource("Mat_calib")
+size = Vector3(4, 0.02, 4)
+
+[sub_resource type="BoxShape3D" id="E2Seam002_Shape"]
+size = Vector3(4, 0.02, 4)
+
+[sub_resource type="BoxMesh" id="E2Seam005_Mesh"]
+material = SubResource("Mat_calib")
+size = Vector3(4, 0.05, 4)
+
+[sub_resource type="BoxShape3D" id="E2Seam005_Shape"]
+size = Vector3(4, 0.05, 4)
+
+; ---- E3 小岩石：统一半径 0.7m，只改高度（0.10 / 0.15 / 0.30m），把"高度"作为唯一自变量 ----
+[sub_resource type="CylinderMesh" id="E3Rock010_Mesh"]
+material = SubResource("Mat_rock")
+top_radius = 0.7
+bottom_radius = 0.7
+height = 0.1
+radial_segments = 20
+
+[sub_resource type="CylinderShape3D" id="E3Rock010_Shape"]
+radius = 0.7
+height = 0.1
+
+[sub_resource type="CylinderMesh" id="E3Rock015_Mesh"]
+material = SubResource("Mat_rock")
+top_radius = 0.7
+bottom_radius = 0.7
+height = 0.15
+radial_segments = 20
+
+[sub_resource type="CylinderShape3D" id="E3Rock015_Shape"]
+radius = 0.7
+height = 0.15
+
+[sub_resource type="CylinderMesh" id="E3Rock030_Mesh"]
+material = SubResource("Mat_rock")
+top_radius = 0.7
+bottom_radius = 0.7
+height = 0.3
+radial_segments = 20
+
+[sub_resource type="CylinderShape3D" id="E3Rock030_Shape"]
+radius = 0.7
+height = 0.3
 
 ; ==================== 场景节点 ====================
 
@@ -977,6 +1103,415 @@ mesh = SubResource("Box_pad60")
 [node name="Ramp60_Pad_Col" type="CollisionShape3D" parent="AreaD_Slopes/Ramp60"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 2.4480762, -14.2401924)
 shape = SubResource("BoxShape_pad60")
+
+; ==================== AreaE_MovementCalibration：移动校准测试区（WORLD-TEST-02） ====================
+; 落位说明（技术实现取舍）：
+;   本区整体布置在场地南侧完全空闲的地带 z ∈ [-20.5, -37]，与最近既有物体（AreaD 南缘 z = -16.82）仍留 3.7m 净空，
+;   因此从结构上不可能影响 AreaA_Start / AreaB_Rocks / AreaC_Parkour / AreaD_Slopes 的任何既有测试；
+;   全部测试体直接坐落在 Y = 0 的主地面上，地面本身已覆盖 XZ ∈ [-40, +40]，无需另铺地板。
+; 用途说明（代管：玩法设计负责人 + QA，缺少可用性测试）：
+;   E1 小障碍高度测试线：区分"直角台阶通过能力"（<=0.15m 应可处理、>=0.20m 应保持阻挡）；
+;   E1B 连续地形凸起：同样的高度改用 30°坡面过渡，用于对比"直角台阶"与"自然地形贴合"的差异；
+;   E2 地面接缝：观察 0.02m / 0.05m 抬升处是否浮空、脚底抖动、移动卡顿；
+;   E3 小岩石：区分小型障碍是否降低阻挡感、大型岩石是否保持阻挡（统一半径 0.7m，只变高度）；
+;   E4 坡脚连接：一段 15°坡 + 坡顶平台 + 反向下行 15°坡，覆盖上坡、下坡与坡脚过渡。
+
+; 区域标牌
+[node name="AreaE_MovementCalibration" type="Node3D" parent="."]
+
+[node name="SignE" type="Label3D" parent="AreaE_MovementCalibration"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -18)
+pixel_size = 0.012
+billboard = 1
+alpha_cut = 1
+text = "E 移动校准测试区"
+font_size = 64
+outline_size = 16
+
+; ---- E1 小障碍高度测试线：5 级水平台阶，沿 +X 排布于 z = -22，中心间距 6m ----
+; 尺寸校验：每块平面 3m × 3m（宽/深均 ≥ 2m）；相邻边缘净距 = 6 - 3 = 3m（≥ 2m）。
+[node name="E1_StepLine" type="StaticBody3D" parent="AreaE_MovementCalibration"]
+
+; STEP 0.05m：顶面 0.05m
+[node name="E1_Step005" type="MeshInstance3D" parent="AreaE_MovementCalibration/E1_StepLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.025, -22)
+mesh = SubResource("E1Step005_Mesh")
+
+[node name="E1_Step005_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E1_StepLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.025, -22)
+shape = SubResource("E1Step005_Shape")
+
+; STEP 0.10m：顶面 0.10m
+[node name="E1_Step010" type="MeshInstance3D" parent="AreaE_MovementCalibration/E1_StepLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.05, -22)
+mesh = SubResource("E1Step010_Mesh")
+
+[node name="E1_Step010_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E1_StepLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.05, -22)
+shape = SubResource("E1Step010_Shape")
+
+; STEP 0.15m：顶面 0.15m
+[node name="E1_Step015" type="MeshInstance3D" parent="AreaE_MovementCalibration/E1_StepLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.075, -22)
+mesh = SubResource("E1Step015_Mesh")
+
+[node name="E1_Step015_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E1_StepLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.075, -22)
+shape = SubResource("E1Step015_Shape")
+
+; STEP 0.20m：顶面 0.20m
+[node name="E1_Step020" type="MeshInstance3D" parent="AreaE_MovementCalibration/E1_StepLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.1, -22)
+mesh = SubResource("E1Step020_Mesh")
+
+[node name="E1_Step020_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E1_StepLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.1, -22)
+shape = SubResource("E1Step020_Shape")
+
+; STEP 0.30m：顶面 0.30m
+[node name="E1_Step030" type="MeshInstance3D" parent="AreaE_MovementCalibration/E1_StepLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0.15, -22)
+mesh = SubResource("E1Step030_Mesh")
+
+[node name="E1_Step030_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E1_StepLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0.15, -22)
+shape = SubResource("E1Step030_Shape")
+
+; ---- E1B 连续地形凸起（E1-FLAT_BUMP）：30°上升 → 水平顶部 0.6m → 30°下降，高度 0.05 / 0.10 / 0.15m ----
+; 摆放说明：每处凸起沿 +X 行进方向展开于 z = -26；坡板绕 Z 轴旋转 ±30°，因此顶面为严格 30° 斜面（与 AreaD 坡道同做法）。
+; 位置校验（以 30° 水平投影 R = 高度 / tan30° 推导）：
+;   0.05m：R = 0.0866m，凸起横跨 x ∈ [-6.0000, -5.2268]；
+;   0.10m：R = 0.1732m，凸起横跨 x ∈ [ 0.0000,  0.9464]；
+;   0.15m：R = 0.2598m，凸起横跨 x ∈ [ 6.0000,  7.1198]；
+;   三处之间净距分别为 5.2m 与 5.1m，互不干扰。
+[node name="E1B_FlatBumpLine" type="StaticBody3D" parent="AreaE_MovementCalibration"]
+
+; 凸起 0.05m：上升段（绕 Z 轴 +30°）
+[node name="E1B_Bump005_Up" type="MeshInstance3D" parent="AreaE_MovementCalibration/E1B_FlatBumpLine"]
+transform = Transform3D(0.8660254, -0.5, 0, 0.5, 0.8660254, 0, 0, 0, 1, -5.9066987, -0.0616025, -26)
+mesh = SubResource("E1Bump005_Mesh")
+
+[node name="E1B_Bump005_Up_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E1B_FlatBumpLine"]
+transform = Transform3D(0.8660254, -0.5, 0, 0.5, 0.8660254, 0, 0, 0, 1, -5.9066987, -0.0616025, -26)
+shape = SubResource("E1Bump005_Shape")
+
+; 凸起 0.05m：水平顶部（顶面 0.05m，长 0.6m）
+[node name="E1B_Bump005_Top" type="MeshInstance3D" parent="AreaE_MovementCalibration/E1B_FlatBumpLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.6133975, -0.05, -26)
+mesh = SubResource("E1BumpTop_Mesh")
+
+[node name="E1B_Bump005_Top_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E1B_FlatBumpLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.6133975, -0.05, -26)
+shape = SubResource("E1BumpTop_Shape")
+
+; 凸起 0.05m：下降段（绕 Z 轴 -30°）
+[node name="E1B_Bump005_Down" type="MeshInstance3D" parent="AreaE_MovementCalibration/E1B_FlatBumpLine"]
+transform = Transform3D(0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 0, 0, 1, -5.3200962, -0.0616025, -26)
+mesh = SubResource("E1Bump005_Mesh")
+
+[node name="E1B_Bump005_Down_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E1B_FlatBumpLine"]
+transform = Transform3D(0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 0, 0, 1, -5.3200962, -0.0616025, -26)
+shape = SubResource("E1Bump005_Shape")
+
+; 凸起 0.10m：上升段
+[node name="E1B_Bump010_Up" type="MeshInstance3D" parent="AreaE_MovementCalibration/E1B_FlatBumpLine"]
+transform = Transform3D(0.8660254, -0.5, 0, 0.5, 0.8660254, 0, 0, 0, 1, 0.1366026, -0.0366025, -26)
+mesh = SubResource("E1Bump010_Mesh")
+
+[node name="E1B_Bump010_Up_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E1B_FlatBumpLine"]
+transform = Transform3D(0.8660254, -0.5, 0, 0.5, 0.8660254, 0, 0, 0, 1, 0.1366026, -0.0366025, -26)
+shape = SubResource("E1Bump010_Shape")
+
+; 凸起 0.10m：水平顶部（顶面 0.10m）
+[node name="E1B_Bump010_Top" type="MeshInstance3D" parent="AreaE_MovementCalibration/E1B_FlatBumpLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4732051, 0, -26)
+mesh = SubResource("E1BumpTop_Mesh")
+
+[node name="E1B_Bump010_Top_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E1B_FlatBumpLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4732051, 0, -26)
+shape = SubResource("E1BumpTop_Shape")
+
+; 凸起 0.10m：下降段
+[node name="E1B_Bump010_Down" type="MeshInstance3D" parent="AreaE_MovementCalibration/E1B_FlatBumpLine"]
+transform = Transform3D(0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 0, 0, 1, 0.8098077, -0.0366025, -26)
+mesh = SubResource("E1Bump010_Mesh")
+
+[node name="E1B_Bump010_Down_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E1B_FlatBumpLine"]
+transform = Transform3D(0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 0, 0, 1, 0.8098077, -0.0366025, -26)
+shape = SubResource("E1Bump010_Shape")
+
+; 凸起 0.15m：上升段
+[node name="E1B_Bump015_Up" type="MeshInstance3D" parent="AreaE_MovementCalibration/E1B_FlatBumpLine"]
+transform = Transform3D(0.8660254, -0.5, 0, 0.5, 0.8660254, 0, 0, 0, 1, 6.1799038, -0.0116025, -26)
+mesh = SubResource("E1Bump015_Mesh")
+
+[node name="E1B_Bump015_Up_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E1B_FlatBumpLine"]
+transform = Transform3D(0.8660254, -0.5, 0, 0.5, 0.8660254, 0, 0, 0, 1, 6.1799038, -0.0116025, -26)
+shape = SubResource("E1Bump015_Shape")
+
+; 凸起 0.15m：水平顶部（顶面 0.15m）
+[node name="E1B_Bump015_Top" type="MeshInstance3D" parent="AreaE_MovementCalibration/E1B_FlatBumpLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5598076, 0.05, -26)
+mesh = SubResource("E1BumpTop_Mesh")
+
+[node name="E1B_Bump015_Top_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E1B_FlatBumpLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5598076, 0.05, -26)
+shape = SubResource("E1BumpTop_Shape")
+
+; 凸起 0.15m：下降段
+[node name="E1B_Bump015_Down" type="MeshInstance3D" parent="AreaE_MovementCalibration/E1B_FlatBumpLine"]
+transform = Transform3D(0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 0, 0, 1, 6.9397114, -0.0116025, -26)
+mesh = SubResource("E1Bump015_Mesh")
+
+[node name="E1B_Bump015_Down_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E1B_FlatBumpLine"]
+transform = Transform3D(0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 0, 0, 1, 6.9397114, -0.0116025, -26)
+shape = SubResource("E1Bump015_Shape")
+
+; ---- E2 地面接缝：两块相邻抬升板（0 → 0.02 → 0.05）+ 一块独立的 0.05m 直接接缝，均位于 z = -30 ----
+; 相邻校验：E2_Seam002_Plate 覆盖 x ∈ [-8, -4]，E2_Seam005_Plate 覆盖 x ∈ [-4, 0]，在 x = -4 处共面衔接，无缝隙。
+[node name="E2_GroundSeam" type="StaticBody3D" parent="AreaE_MovementCalibration"]
+
+; 接缝一：主地面 0 → 0.02m
+[node name="E2_Seam002_Plate" type="MeshInstance3D" parent="AreaE_MovementCalibration/E2_GroundSeam"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.01, -30)
+mesh = SubResource("E2Seam002_Mesh")
+
+[node name="E2_Seam002_Plate_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E2_GroundSeam"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.01, -30)
+shape = SubResource("E2Seam002_Shape")
+
+; 接缝二：0.02m → 0.05m（与上一块在 x = -4 处衔接）
+[node name="E2_Seam005_Plate" type="MeshInstance3D" parent="AreaE_MovementCalibration/E2_GroundSeam"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.025, -30)
+mesh = SubResource("E2Seam005_Mesh")
+
+[node name="E2_Seam005_Plate_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E2_GroundSeam"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.025, -30)
+shape = SubResource("E2Seam005_Shape")
+
+; 独立直接接缝：主地面 0 → 0.05m（与接缝二之间留 1m 间隙，用于单独观察）
+[node name="E2_Seam005_DirectPlate" type="MeshInstance3D" parent="AreaE_MovementCalibration/E2_GroundSeam"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.025, -30)
+mesh = SubResource("E2Seam005_Mesh")
+
+[node name="E2_Seam005_DirectPlate_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E2_GroundSeam"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.025, -30)
+shape = SubResource("E2Seam005_Shape")
+
+; ---- E3 小岩石碰撞测试：三块圆柱岩，半径统一 0.7m，仅高度不同，位于 z = -30 ----
+; 间距校验：相邻中心距 3.5m、直径 1.4m ⇒ 边缘净距 2.1m。
+[node name="E3_Rocks" type="StaticBody3D" parent="AreaE_MovementCalibration"]
+
+; Small Rock：高 0.10m
+[node name="E3_RockSmall" type="MeshInstance3D" parent="AreaE_MovementCalibration/E3_Rocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 0.05, -30)
+mesh = SubResource("E3Rock010_Mesh")
+
+[node name="E3_RockSmall_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E3_Rocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 0.05, -30)
+shape = SubResource("E3Rock010_Shape")
+
+; Medium Rock：高 0.15m
+[node name="E3_RockMedium" type="MeshInstance3D" parent="AreaE_MovementCalibration/E3_Rocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, 0.075, -30)
+mesh = SubResource("E3Rock015_Mesh")
+
+[node name="E3_RockMedium_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E3_Rocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, 0.075, -30)
+shape = SubResource("E3Rock015_Shape")
+
+; Large Rock：高 0.30m
+[node name="E3_RockLarge" type="MeshInstance3D" parent="AreaE_MovementCalibration/E3_Rocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0.15, -30)
+mesh = SubResource("E3Rock030_Mesh")
+
+[node name="E3_RockLarge_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E3_Rocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0.15, -30)
+shape = SubResource("E3Rock030_Shape")
+
+; ---- E4 坡脚连接测试：上坡 15° → 坡顶平台 → 反向下坡 15°，x = 18，z ≈ -28 ~ -38.5 ----
+; 说明：坡体与坡顶平台直接复用 AreaD 的既有 15° 坡资源（Box_ramp / BoxShape_ramp / Box_pad15 / BoxShape_pad15），
+;       因此 E4 的坡面角度、坡体厚度与 AreaD 的 15° 坡完全一致；坡体低端按既有做法沉入地面 0.3m，坡脚与主地面自然相交、无台阶。
+;       上行路线：平地 → 坡脚 → 坡顶平台；反向路线：坡顶平台 → 另一侧坡脚 → 平地。
+[node name="E4_SlopeFoot" type="StaticBody3D" parent="AreaE_MovementCalibration"]
+
+; 上行坡体：绕 X 轴 +15°，使 -Z 一侧为坡顶端、+Z 一侧为坡脚端
+[node name="E4_UpRamp" type="MeshInstance3D" parent="AreaE_MovementCalibration/E4_SlopeFoot"]
+transform = Transform3D(1, 0, 0, 0, 0.9659258, -0.258819, 0, 0.258819, 0.9659258, 18, 0.1866794, -28)
+mesh = SubResource("Box_ramp")
+
+[node name="E4_UpRamp_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E4_SlopeFoot"]
+transform = Transform3D(1, 0, 0, 0, 0.9659258, -0.258819, 0, 0.258819, 0.9659258, 18, 0.1866794, -28)
+shape = SubResource("BoxShape_ramp")
+
+; 坡顶平台：顶面与上行坡高端齐平（顶面高度 1.2529143m）
+[node name="E4_TopPad" type="MeshInstance3D" parent="AreaE_MovementCalibration/E4_SlopeFoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0.6264572, -31.8201317)
+mesh = SubResource("Box_pad15")
+
+[node name="E4_TopPad_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E4_SlopeFoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0.6264572, -31.8201317)
+shape = SubResource("BoxShape_pad15")
+
+; 反向下行坡体：绕 X 轴 -15°，高端接坡顶平台、低端接平地（用于下坡浮空 / 脚底抖动 / 高度变化是否自然的验证）
+[node name="E4_DownRamp" type="MeshInstance3D" parent="AreaE_MovementCalibration/E4_SlopeFoot"]
+transform = Transform3D(1, 0, 0, 0, 0.9659258, 0.258819, 0, -0.258819, 0.9659258, 18, 0.1866794, -35.6402634)
+mesh = SubResource("Box_ramp")
+
+[node name="E4_DownRamp_Col" type="CollisionShape3D" parent="AreaE_MovementCalibration/E4_SlopeFoot"]
+transform = Transform3D(1, 0, 0, 0, 0.9659258, 0.258819, 0, -0.258819, 0.9659258, 18, 0.1866794, -35.6402634)
+shape = SubResource("BoxShape_ramp")
+
+; ---- AreaE 全部文字标记（Label3D，参数与既有标牌一致：始终面向摄像机、无外部字体资源）----
+
+; E1 五级台阶标记
+[node name="E1_Label005" type="Label3D" parent="AreaE_MovementCalibration"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1.25, -22)
+pixel_size = 0.012
+billboard = 1
+alpha_cut = 1
+text = "STEP 0.05m"
+font_size = 64
+outline_size = 16
+
+[node name="E1_Label010" type="Label3D" parent="AreaE_MovementCalibration"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.3, -22)
+pixel_size = 0.012
+billboard = 1
+alpha_cut = 1
+text = "STEP 0.10m"
+font_size = 64
+outline_size = 16
+
+[node name="E1_Label015" type="Label3D" parent="AreaE_MovementCalibration"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, -22)
+pixel_size = 0.012
+billboard = 1
+alpha_cut = 1
+text = "STEP 0.15m"
+font_size = 64
+outline_size = 16
+
+[node name="E1_Label020" type="Label3D" parent="AreaE_MovementCalibration"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.4, -22)
+pixel_size = 0.012
+billboard = 1
+alpha_cut = 1
+text = "STEP 0.20m"
+font_size = 64
+outline_size = 16
+
+[node name="E1_Label030" type="Label3D" parent="AreaE_MovementCalibration"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1.5, -22)
+pixel_size = 0.012
+billboard = 1
+alpha_cut = 1
+text = "STEP 0.30m"
+font_size = 64
+outline_size = 16
+
+; E1B 连续地形凸起标记（直角台阶与自然坡面的对照组）
+[node name="E1B_Label005" type="Label3D" parent="AreaE_MovementCalibration"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.61, 1.25, -26)
+pixel_size = 0.012
+billboard = 1
+alpha_cut = 1
+text = "BUMP 0.05m（30°上-平顶-30°下）"
+font_size = 64
+outline_size = 16
+
+[node name="E1B_Label010" type="Label3D" parent="AreaE_MovementCalibration"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.47, 1.3, -26)
+pixel_size = 0.012
+billboard = 1
+alpha_cut = 1
+text = "BUMP 0.10m（30°上-平顶-30°下）"
+font_size = 64
+outline_size = 16
+
+[node name="E1B_Label015" type="Label3D" parent="AreaE_MovementCalibration"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.56, 1.35, -26)
+pixel_size = 0.012
+billboard = 1
+alpha_cut = 1
+text = "BUMP 0.15m（30°上-平顶-30°下）"
+font_size = 64
+outline_size = 16
+
+; E2 地面接缝标记
+[node name="E2_Label002" type="Label3D" parent="AreaE_MovementCalibration"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.22, -30)
+pixel_size = 0.012
+billboard = 1
+alpha_cut = 1
+text = "SEAM 0.02m"
+font_size = 64
+outline_size = 16
+
+[node name="E2_Label005" type="Label3D" parent="AreaE_MovementCalibration"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1.25, -30)
+pixel_size = 0.012
+billboard = 1
+alpha_cut = 1
+text = "SEAM 0.05m"
+font_size = 64
+outline_size = 16
+
+[node name="E2_Label005Direct" type="Label3D" parent="AreaE_MovementCalibration"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.25, -30)
+pixel_size = 0.012
+billboard = 1
+alpha_cut = 1
+text = "SEAM 0.05m（直接接缝）"
+font_size = 64
+outline_size = 16
+
+; E3 小岩石标记
+[node name="E3_LabelSmall" type="Label3D" parent="AreaE_MovementCalibration"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 1.3, -30)
+pixel_size = 0.012
+billboard = 1
+alpha_cut = 1
+text = "ROCK 0.10m"
+font_size = 64
+outline_size = 16
+
+[node name="E3_LabelMedium" type="Label3D" parent="AreaE_MovementCalibration"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, 1.35, -30)
+pixel_size = 0.012
+billboard = 1
+alpha_cut = 1
+text = "ROCK 0.15m"
+font_size = 64
+outline_size = 16
+
+[node name="E3_LabelLarge" type="Label3D" parent="AreaE_MovementCalibration"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 1.5, -30)
+pixel_size = 0.012
+billboard = 1
+alpha_cut = 1
+text = "ROCK 0.30m"
+font_size = 64
+outline_size = 16
+
+; E4 坡脚连接标记（上行 / 反向下行两条路线）
+[node name="E4_LabelUp" type="Label3D" parent="AreaE_MovementCalibration"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 3, -28)
+pixel_size = 0.012
+billboard = 1
+alpha_cut = 1
+text = "SLOPE 15° 上坡接平地"
+font_size = 64
+outline_size = 16
+
+[node name="E4_LabelDown" type="Label3D" parent="AreaE_MovementCalibration"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 3, -35.6)
+pixel_size = 0.012
+billboard = 1
+alpha_cut = 1
+text = "SLOPE 15° 坡顶下坡接平地"
+font_size = 64
+outline_size = 16
 
 ; ==================== 玩家 ====================
 
