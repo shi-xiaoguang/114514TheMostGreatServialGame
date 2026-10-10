@@ -3,7 +3,7 @@ extends CharacterBody3D
 ## 绑定对象：res://scenes/player.tscn 的根节点 Player（CharacterBody3D）。
 ## 职责：重力落地、WASD 相对角色朝向的水平移动、Shift 奔跑、固定耗时的线性加减速、
 ##       鼠标水平转向与摄像机俯仰钳制、Esc 双向切换鼠标捕获、
-##       空格起跳与可变跳跃高度、空中有限方向调整、0.10 秒离地宽限、0.10 秒跳跃输入缓冲、禁止二段跳。
+##       空格起跳与可变跳跃高度、空中有限方向调整、0.10 秒离地宽限、禁止二段跳与长按重复触发。
 ## 原点约定：本节点原点位于玩家脚底，因此站立碰撞体中心在本地 Y = +0.90，
 ##           摄像机视线高度由头部枢轴的本地 Y = +1.65 决定。
 ## 跳跃约定：平地全程按住空格最高约 0.8 米（已批准）；轻点即松的最低高度由 min_jump_height 决定，
@@ -49,9 +49,6 @@ const MIN_TIME_SPAN: float = 0.0001
 ## 离地宽限（秒）：已批准为 0.10 秒，离开可站立地面后仍可在该时限内起跳一次。
 @export var coyote_time: float = 0.10
 
-## 跳跃输入缓冲（秒）：已批准为 0.10 秒，提前按下空格会在该时限内被记住并在落地时自动起跳。
-@export var jump_buffer_time: float = 0.10
-
 # ==================== 节点引用（入树后一次性解析，避免逐帧查找节点） ====================
 
 ## 头部枢轴：只承担俯仰，水平转向交给玩家本体。
@@ -68,8 +65,9 @@ var _gravity: float = float(ProjectSettings.get_setting("physics/3d/default_grav
 ## 离地宽限剩余时间（秒）：站在可站立地面时保持为 coyote_time，离地后按物理帧递减。
 var _coyote_timer: float = 0.0
 
-## 跳跃输入缓冲剩余时间（秒）：按下空格瞬间置为 jump_buffer_time，之后按物理帧递减。
-var _jump_buffer_timer: float = 0.0
+## 上一物理帧空格是否处于按下状态：只把"由未按下变为按下"当作一次新的起跳请求，
+## 因此持续按住、键盘自动重复、以及长按被系统拆成连续按下事件，都不会重复触发起跳。
+var _jump_pressed_last_frame: bool = false
 
 ## 本次离地是否已经执行过跳跃：起跳时置真，落地后复位，用于从根本上杜绝二段跳。
 var _jump_consumed_in_air: bool = false
@@ -105,15 +103,19 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		_toggle_mouse_capture()
 
-## 每物理帧执行：计时器维护 → 重力 → 起跳判定 → 松键削顶 → 读取移动输入 → 固定耗时线性加减速 → 位移与碰撞解算。
+## 每物理帧执行：离地宽限维护 → 重力 → 起跳判定 → 松键削顶 → 读取移动输入 → 固定耗时线性加减速 → 位移与碰撞解算。
 func _physics_process(delta: float) -> void:
-	# 先维护跳跃计时器（离地宽限、输入缓冲、落地复位），其结果供本帧起跳判定使用。
-	_update_jump_timers(delta)
+	# 先维护离地宽限计时器与落地复位，其结果供本帧起跳判定使用。
+	_update_coyote_timer(delta)
+	# 读取空格是否按下，并与上一物理帧比较得到"新的按下"边沿：按住不放不会产生边沿。
+	var jump_held: bool = Input.is_action_pressed("jump")
+	var jump_pressed_edge: bool = jump_held and not _jump_pressed_last_frame
+	_jump_pressed_last_frame = jump_held
 	# 未站在地面上时按重力加速度累积下落速度，使角色最终落回地面。
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
-	# 尝试起跳：输入缓冲与离地宽限同时有效且本次离地尚未跳跃时才执行，并一次性消费掉两个计时器。
-	_try_start_jump()
+	# 尝试起跳：只有出现新的按下边沿、处于宽限内、且本次离地尚未跳跃时才执行。
+	_try_start_jump(jump_pressed_edge)
 	# 松键削顶：已松开空格时把上升速度截断到最低起跳速度，实现轻点跳得低、按住跳得高。
 	_apply_jump_release_cut()
 	# 读取 WASD 输入：get_vector 返回长度不超过 1 的向量，因此斜向移动不会产生额外速度加成。
@@ -163,8 +165,8 @@ func _apply_horizontal_movement(direction: Vector3, target_speed: float, delta: 
 	# move_toward 以线性方式逼近目标：到达后精确停住，不会过冲。
 	velocity = velocity.move_toward(target_velocity, speed_step)
 
-## 维护跳跃计时器：站在可站立地面时充满离地宽限并复位消费标记，离地后两个计时器按帧递减。
-func _update_jump_timers(delta: float) -> void:
+## 维护离地宽限计时器：站在可站立地面时充满、离地后按物理帧递减；落地同时复位跳跃消费标记。
+func _update_coyote_timer(delta: float) -> void:
 	# 站立状态取自上一物理帧的碰撞解算结果，与 move_and_slide 的判定完全一致。
 	if is_on_floor():
 		# 站在可站立地面：离地宽限充满，表示眼下随时可以起跳。
@@ -174,17 +176,12 @@ func _update_jump_timers(delta: float) -> void:
 	else:
 		# 已离地：宽限按物理帧时长递减，减到 0 即表示超过 0.10 秒，不再允许离地起跳。
 		_coyote_timer = maxf(_coyote_timer - delta, 0.0)
-	# 按下空格的那一帧写入输入缓冲，使"提前按键"被记住，而不是被直接丢弃。
-	if Input.is_action_just_pressed("jump"):
-		_jump_buffer_timer = jump_buffer_time
-	else:
-		# 其余帧按物理帧时长递减缓冲，超过 0.10 秒即失效。
-		_jump_buffer_timer = maxf(_jump_buffer_timer - delta, 0.0)
 
-## 起跳判定：输入缓冲与离地宽限同时有效、且本次离地尚未跳跃时，执行一次起跳并消费两个计时器。
-func _try_start_jump() -> void:
-	# 缓冲已失效：有效期内没有按下空格，本帧不起跳。
-	if _jump_buffer_timer <= 0.0:
+## 起跳判定：只有出现新的按下边沿、处于离地宽限之内、且本次离地尚未跳跃时，才执行一次起跳。
+## 本函数不再有任何"提前按键预约落地起跳"的逻辑：空中按下空格不会在落地时被兑现。
+func _try_start_jump(pressed_edge: bool) -> void:
+	# 本帧没有出现新的按下边沿（例如一直按住不放）：不顺延、不补跳，直接不起跳。
+	if not pressed_edge:
 		return
 	# 宽限已耗尽：既不站在地面、离开地面也超过 0.10 秒，本帧不起跳。
 	if _coyote_timer <= 0.0:
@@ -196,8 +193,6 @@ func _try_start_jump() -> void:
 	velocity.y = _max_jump_velocity
 	# 记录本次离地已用掉跳跃机会，落地前不再允许第二次。
 	_jump_consumed_in_air = true
-	# 消费输入缓冲：一次按键只兑现一次起跳，不残留到后续帧。
-	_jump_buffer_timer = 0.0
 	# 消费离地宽限：避免同一帧或紧随其后的帧被再次判定为可起跳。
 	_coyote_timer = 0.0
 
