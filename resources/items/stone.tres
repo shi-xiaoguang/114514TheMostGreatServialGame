@@ -1,0 +1,20 @@
+; Robinson —— 物品定义资源：石头（ITEM-01 示例数据）
+; 说明：本文件是一份纯数据资源，由 res://scripts/items/item_definition.gd 解释；
+;       显式以路径引用脚本，不依赖全局类名 ItemDefinition 是否已注册。
+; 标签语义：stone = 石质；building = 可用于建造。
+; 注：Godot 编辑器保存资源时会丢弃本文件内的 ; 注释，此现象不影响功能。
+
+[gd_resource type="Resource" load_steps=2 format=3]
+
+; 物品定义脚本：所有字段的意义由该脚本决定
+[ext_resource type="Script" path="res://scripts/items/item_definition.gd" id="1_item_definition"]
+
+[resource]
+script = ExtResource("1_item_definition")
+id = &"stone"
+display_name = "石头"
+description = "从地面或岩壁上捡到的石块，是建造与制作的基础材料。"
+type = 0
+max_stack = 99
+tags = Array[StringName]([&"stone", &"building"])
+metadata = {}

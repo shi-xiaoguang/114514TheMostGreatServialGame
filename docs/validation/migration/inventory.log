@@ -1,0 +1,225 @@
+Godot Engine v4.7.2.stable.steam.ed1daf0bf - https://godotengine.org
+
+[INVENTORY-01] 无头验证开始；引擎版本 = 4.7.2-stable (steam)
+[PASS] res://resources/items/wood.tres 可加载并转换为 ItemDefinition
+[PASS] res://resources/items/stone.tres 可加载并转换为 ItemDefinition
+[PASS] res://resources/items/berry.tres 可加载并转换为 ItemDefinition
+[PASS] res://resources/items/stone_axe.tres 可加载并转换为 ItemDefinition
+[INVENTORY-01] ---- 用例 1：新背包初始状态 ----
+[PASS] DEFAULT_CAPACITY 常量 = 20
+[PASS] 默认 capacity = 20
+[PASS] 初始已用格子 = 0
+[PASS] 初始 is_full() = false
+[PASS] 初始 get_stacks() 为空
+[PASS] 初始 get_item_count(wood) = 0
+[PASS] 初始 has_item(wood) = false
+  已用格子 0 / 容量 20，共 0 件
+[INVENTORY-01] ---- 用例 2：添加木头 x250（单堆上限 99） ----
+[PASS] add_item(wood, 250) 剩余量 = 0
+[PASS] 木头总数 = 250
+[PASS] 已用格子 = 3
+[PASS] 第 1 堆数量 = 99
+[PASS] 第 2 堆数量 = 99
+[PASS] 第 3 堆数量 = 52
+[PASS] 第 3 堆 is_full() = false
+[PASS] 第 3 堆 space_left() = 47
+  [0] 木头(wood) x99
+  [1] 木头(wood) x99
+  [2] 木头(wood) x52
+  已用格子 3 / 容量 20，共 250 件
+[INVENTORY-01] ---- 用例 3：先补满未满堆再开新堆 ----
+[PASS] add_item(wood, 47) 剩余量 = 0
+[PASS] 木头总数 = 297
+[PASS] 已用格子（不应新增堆） = 3
+[PASS] 第 3 堆已补满 = 99
+[PASS] add_item(wood, 1) 剩余量 = 0
+[PASS] 已用格子（应新增 1 堆） = 4
+  [0] 木头(wood) x99
+  [1] 木头(wood) x99
+  [2] 木头(wood) x99
+  [3] 木头(wood) x1
+  已用格子 4 / 容量 20，共 298 件
+[INVENTORY-01] ---- 用例 4：容量上限（capacity = 2 堆） ----
+[PASS] 放入木头 x5 剩余量 = 0
+[PASS] 放入石头 x5 剩余量 = 0
+[PASS] is_full() = true
+[PASS] 放入浆果 x3 剩余量（应为 3） = 3
+[PASS] 浆果总数 = 0
+[PASS] 已用格子 = 2
+[PASS] 补同类物品石头 x10 剩余量 = 0
+[PASS] 石头总数 = 15
+  [0] 木头(wood) x5
+  [1] 石头(stone) x15
+  已用格子 2 / 容量 2，共 20 件
+[INVENTORY-01] ---- 用例 5：不可堆叠物品（石斧 max_stack = 1） ----
+[PASS] add_item(stone_axe, 3) 剩余量 = 0
+[PASS] 石斧总数 = 3
+[PASS] 已用格子 = 3
+[PASS] 第 1 堆数量 = 1
+[PASS] 第 2 堆数量 = 1
+[PASS] 第 3 堆数量 = 1
+[PASS] 第 1 堆 is_full() = true
+[PASS] 第 1 堆 space_left() = 0
+  [0] 石斧(stone_axe) x1
+  [1] 石斧(stone_axe) x1
+  [2] 石斧(stone_axe) x1
+  已用格子 3 / 容量 20，共 3 件
+[INVENTORY-01] ---- 用例 6：超量移除与空堆清理 ----
+[PASS] remove_item(wood, 300) 实际移除量 = 250
+[PASS] 木头总数 = 0
+[PASS] 已用格子（空堆应被删除） = 0
+[PASS] remove_item(wood, 100) 实际移除量 = 100
+[PASS] 木头剩余总数 = 150
+[PASS] 已用格子（应为 2 堆） = 2
+  [0] 木头(wood) x98
+  [1] 木头(wood) x52
+  已用格子 2 / 容量 20，共 150 件
+[INVENTORY-01] ---- 用例 7：查询边界 ----
+[PASS] has_item(stone, 40) = true
+[PASS] has_item(stone, 41) = false
+[PASS] has_item(stone) 默认查 1 件 = true
+[PASS] has_item(wood) = false
+[PASS] has_item(不存在 id) = false
+[PASS] get_item_count(wood) = 0
+[PASS] get_item_count(不存在 id) = 0
+[INVENTORY-01] ---- 用例 8：非法请求 ----
+WARNING: [Inventory] add_item 收到空的 ItemDefinition，本次请求已忽略。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] add_item (res://scripts/inventory/inventory.gd:40)
+       [1] _case_invalid_requests (res://tests/test_inventory.gd:277)
+       [2] _run_unit_tests (res://tests/test_inventory.gd:130)
+       [3] _init (res://tests/test_inventory.gd:60)
+[PASS] add_item(null, 5) 剩余量（应为 5） = 5
+[PASS] add_item(wood, 0) 返回 0 = 0
+[PASS] add_item(wood, -3) 返回 0 = 0
+[PASS] add_item(null, -3) 返回 0 = 0
+[PASS] add_item(null, 0) 返回 0 = 0
+WARNING: [Inventory] add_item 收到无效的 ItemDefinition，本次请求已忽略。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] add_item (res://scripts/inventory/inventory.gd:44)
+       [1] _case_invalid_requests (res://tests/test_inventory.gd:284)
+       [2] _run_unit_tests (res://tests/test_inventory.gd:130)
+       [3] _init (res://tests/test_inventory.gd:60)
+[PASS] 空 id 定义全部拒绝 = 5
+[PASS] 空 id 未产生库存 = 0
+WARNING: [Inventory] add_item 收到无效的 ItemDefinition，本次请求已忽略。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] add_item (res://scripts/inventory/inventory.gd:44)
+       [1] _case_invalid_requests (res://tests/test_inventory.gd:288)
+       [2] _run_unit_tests (res://tests/test_inventory.gd:130)
+       [3] _init (res://tests/test_inventory.gd:60)
+[PASS] 零堆叠上限定义全部拒绝 = 5
+WARNING: [Inventory] add_item 收到无效的 ItemDefinition，本次请求已忽略。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] add_item (res://scripts/inventory/inventory.gd:44)
+       [1] _case_invalid_requests (res://tests/test_inventory.gd:290)
+       [2] _run_unit_tests (res://tests/test_inventory.gd:130)
+       [3] _init (res://tests/test_inventory.gd:60)
+[PASS] 负堆叠上限定义全部拒绝 = 5
+[PASS] remove_item(wood, -1) 返回 0 = 0
+[PASS] remove_item(wood, 0) 返回 0 = 0
+[PASS] remove_item(不存在 id, 5) 返回 0 = 0
+[PASS] 木头总数未变 = 10
+[PASS] 已用格子未变 = 1
+[INVENTORY-01] ---- 用例 9：clear() 清空 ----
+[PASS] 清空前已用格子 = 3
+[PASS] 清空后已用格子 = 0
+[PASS] 清空后木头总数 = 0
+[PASS] 清空后石头总数 = 0
+[PASS] 清空后 is_full() = false
+[PASS] 清空后 get_stacks() 为空
+  已用格子 0 / 容量 20，共 0 件
+[INVENTORY-01] ---- 用例 10：changed 信号 ----
+[PASS] 添加成功后信号次数 = 1
+[PASS] 零数量请求后信号次数（不变） = 1
+WARNING: [Inventory] add_item 收到空的 ItemDefinition，本次请求已忽略。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] add_item (res://scripts/inventory/inventory.gd:40)
+       [1] _case_changed_signal (res://tests/test_inventory.gd:331)
+       [2] _run_unit_tests (res://tests/test_inventory.gd:132)
+       [3] _init (res://tests/test_inventory.gd:60)
+[PASS] 空定义请求后信号次数（不变） = 1
+[PASS] 无效移除后信号次数（不变） = 1
+[PASS] 移除成功后信号次数 = 2
+[PASS] 空背包 clear() 后信号次数（不变） = 2
+[PASS] 加料并清空后信号次数 = 4
+[PASS] 两格加入 250 木头剩余 52 = 52
+[PASS] 部分放入后信号次数 = 5
+[PASS] 满包拒绝石头 = 1
+[PASS] 满包及非法请求后信号次数不变 = 5
+[PASS] 批量移除实际为 198 = 198
+[PASS] 批量移除只通知一次 = 6
+  changed 信号总触发次数 = 6
+[INVENTORY-01] ---- 用例 11：get_stacks() 返回副本 ----
+[PASS] 清空前已用格子 = 2
+[PASS] 清空副本后背包已用格子 = 2
+[PASS] 清空副本后背包木头总数 = 100
+[PASS] 改副本后背包已用格子 = 2
+[PASS] 改副本后背包石头总数 = 0
+[PASS] 副本元素个数 = 2
+[PASS] 副本首堆数量 = 99
+[PASS] 改快照堆数量不改变库存 = 100
+[PASS] 替换快照定义不改变原库存 = 100
+[PASS] 替换快照定义不产生石头 = 0
+[PASS] 改快照不触发库存 changed = 0
+[PASS] 原库存变化不回写旧快照 = 99
+[PASS] 原库存正常移除 = 50
+[INVENTORY-01] ---- ItemStack 数量边界 ----
+[PASS] 初始化数量限制在单堆上限 = 99
+[PASS] 满堆添加实际为零 = 0
+[PASS] 负数添加实际为零 = 0
+[PASS] 负数移除实际为零 = 0
+[PASS] 超量移除返回实际量 = 99
+[PASS] 移除后数量为零 = 0
+[PASS] 空堆再次移除为零 = 0
+[PASS] 空堆 is_empty
+[PASS] 空堆剩余空间 = 99
+[PASS] 空定义创建空堆 = 0
+[PASS] 负初始数量创建空堆 = 0
+[INVENTORY-01] ---- 非正容量边界 ----
+[PASS] 零容量全部退回 = 5
+[PASS] 零容量没有新增格子 = 0
+[PASS] 负容量全部退回 = 5
+[PASS] 负容量没有新增格子 = 0
+[INVENTORY-01] ---- 整批容量预检 ----
+[PASS] [99,95] 无法完整加入 5 木头
+[PASS] [99,95] 可以完整加入 4 木头
+[PASS] 满格无法加入不同物品
+[PASS] 零数量预检拒绝
+[PASS] 负数量预检拒绝
+[PASS] 空定义预检拒绝
+[PASS] 空 id 预检拒绝
+[PASS] 无效堆叠上限预检拒绝
+[PASS] 同 id 定义可补入已有堆
+[PASS] 预检后木头总数未变 = 194
+[PASS] 预检后堆数未变 = 2
+[PASS] 所有预检均不发 changed = 0
+[PASS] 预检可放的 4 件实际全放入 = 0
+[PASS] 补满之后无法再加入
+[PASS] 两个空格可放 198 木头
+[PASS] 两个空格无法放 199 木头
+[PASS] 两个空格可放两把石斧
+[PASS] 两个空格无法放三把石斧
+[PASS] 零容量预检拒绝
+[PASS] 负容量预检拒绝
+[PASS] 空背包预检不添加物品 = 0
+[INVENTORY-01] ---- 用例 12：InventoryManager Autoload 可达性 ----
+[PASS] 场景树根下存在 InventoryManager 单例
+[PASS] 单例已创建玩家背包
+[PASS] 玩家背包初始已用格子 = 0
+[PASS] 玩家背包默认容量 = 20
+[PASS] 经单例添加木头 x5 剩余量 = 0
+[PASS] 经单例添加后木头总数 = 5
+[PASS] create_inventory() 返回实例
+[PASS] 派生背包与玩家背包不是同一实例
+[PASS] 派生背包容量按参数生效 = 5
+[PASS] 派生背包初始为空（与玩家背包相互独立） = 0
+  通过单例添加后玩家背包内容：
+  [0] 木头(wood) x5
+  已用格子 1 / 容量 20，共 5 件
+[INVENTORY-01] 汇总：PASS = 146，FAIL = 0

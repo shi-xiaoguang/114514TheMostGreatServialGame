@@ -1,0 +1,23 @@
+; Robinson —— 物品定义资源：石斧（ITEM-01 示例数据）
+; 说明：本文件是一份纯数据资源，由 res://scripts/items/item_definition.gd 解释；
+;       显式以路径引用脚本，不依赖全局类名 ItemDefinition 是否已注册。
+; 类型语义：Tool（工具，提供能力的工具），按主创 ITEM-01 裁决不使用 Equipment。
+; 标签语义：标签只表示用途能力，不表示材料类别——tool = 属于工具；cutting = 具备砍伐能力；
+;           wood_processing = 可加工木料。工具不承担 building 等材料类标签。
+; 堆叠：工具单件持有，max_stack = 1 表示不可堆叠。
+; 注：Godot 编辑器保存资源时会丢弃本文件内的 ; 注释，此现象不影响功能。
+
+[gd_resource type="Resource" load_steps=2 format=3]
+
+; 物品定义脚本：所有字段的意义由该脚本决定
+[ext_resource type="Script" path="res://scripts/items/item_definition.gd" id="1_item_definition"]
+
+[resource]
+script = ExtResource("1_item_definition")
+id = &"stone_axe"
+display_name = "石斧"
+description = "用木料与石块粗糙绑扎成的斧头，可用于砍伐与加工木料。"
+type = 1
+max_stack = 1
+tags = Array[StringName]([&"tool", &"cutting", &"wood_processing"])
+metadata = {}
