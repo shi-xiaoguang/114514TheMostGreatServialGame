@@ -1,0 +1,37 @@
+; Robinson —— 可拾取物场景（任务编号 INTERACTION-01：最小拾取闭环）
+; 生成方式：节点骨架与参数由场景文件直接给出，网格与材质全部使用内置资源，不加载外部贴图。
+; 原点约定：根节点 WorldItem 的原点位于物体几何中心；示例放置时取 Y = 0.15，使 0.3 米见方的
+;           方块底面正好贴在地表 Y = 0。
+; 侦测约定：Detect 使用半径 2.5 米的球形区域，仅用于判断"玩家是否靠近"，不产生物理阻挡。
+; 说明：Godot 编辑器保存场景时会丢弃本文件内的 ; 注释，此现象不影响场景功能。
+
+[gd_scene load_steps=5 format=3]
+
+; 可拾取物脚本：侦测、最近者优先判定与入包逻辑全部集中在此脚本
+[ext_resource type="Script" path="res://scripts/interaction/world_item.gd" id="1_world_item"]
+
+; 物体网格：0.3 米见方的立方体，仅用于让玩家在世界上看到它
+[sub_resource type="BoxMesh" id="BoxMesh_item"]
+size = Vector3(0.3, 0.3, 0.3)
+
+; 物体材质：内置纯色材质，不依赖任何外部贴图
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_item"]
+albedo_color = Color(0.65, 0.45, 0.24, 1)
+roughness = 1.0
+
+; 侦测范围：半径 2.5 米的球体，固定值，不作为导出参数
+[sub_resource type="SphereShape3D" id="SphereShape3D_detect"]
+radius = 2.5
+
+; 可拾取物根节点：Area3D 只做侦测，不阻挡玩家行走；拾取逻辑由下面挂载的脚本承担
+[node name="WorldItem" type="Area3D"]
+script = ExtResource("1_world_item")
+
+; 可见网格：让玩家在世界上看得到这个物体
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_item")
+surface_material_override/0 = SubResource("StandardMaterial3D_item")
+
+; 侦测形状节点：范围完全由 SphereShape3D 的半径决定
+[node name="Detect" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_detect")

@@ -13,7 +13,9 @@
 ; 范围声明：本场景不含死亡、生命值、体力、存档、传送、攀爬等功能，也不包含自动迈台阶、坡地跳跃衰减、陡坡滑动等机制。
 ; 说明：Godot 编辑器保存场景时会丢弃本文件内的 ; 注释，此现象不影响场景功能。
 
-[gd_scene load_steps=110 format=3]
+[gd_scene load_steps=111 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/pickup_demo.tscn" id="2_pickups"]
 
 ; 玩家场景：复用既有第一人称玩家，不创建第二套玩家控制器
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
@@ -1519,3 +1521,5 @@ outline_size = 16
 ; 玩家出生后由重力落地并稳定站在 Y = 0 的地面上
 [node name="Player" parent="." instance=ExtResource("1_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -0.10749626)
+
+[node name="PickupDemo" parent="." instance=ExtResource("2_pickups")]

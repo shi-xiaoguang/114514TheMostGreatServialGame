@@ -1,0 +1,20 @@
+; Robinson —— INTERACTION-01 无头验证场景（测试专用，非生产内容，不参与正式游玩流程）
+; 结构：根节点 InteractionTest 挂载测试驱动；子节点为正式 movement_test.tscn。
+; 执行方式：godot --headless --path <工程目录> res://tests/interaction_test.tscn
+; 说明：测试采用"运行场景"而非 --script，原因是 --script 启动时编译期解析不到 Autoload 标识符。
+; 注：Godot 编辑器保存场景时会丢弃本文件内的 ; 注释，此现象不影响场景功能。
+
+[gd_scene load_steps=3 format=3]
+
+; 测试驱动脚本：布置受控拾取物、注入交互键事件、逐条断言并输出 PASS/FAIL
+[ext_resource type="Script" path="res://tests/interaction_driver.gd" id="1_driver"]
+
+; 被测世界场景：正式主场景，覆盖当前玩家与迁入交互的实际接线
+[ext_resource type="PackedScene" path="res://scenes/movement_test.tscn" id="2_world"]
+
+; 测试根节点：脚本在 _ready 中启动完整验证流程
+[node name="InteractionTest" type="Node"]
+script = ExtResource("1_driver")
+
+; 世界场景实例：提供地面、平行光、玩家与预置拾取物
+[node name="World" parent="." instance=ExtResource("2_world")]

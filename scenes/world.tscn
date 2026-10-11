@@ -2,7 +2,9 @@
 ; 生成方式：节点骨架由 Godot MCP 创建，Mesh / Shape / 材质 / 光照参数由场景文件补齐。
 ; 说明：Godot 编辑器保存场景时会丢弃本文件内的 ; 注释，此现象不影响场景功能。
 
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/pickup_demo.tscn" id="2_pickups"]
 
 ; 玩家场景：由 PLAYER-01 引入，替代本场景原有的固定观察相机
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
@@ -62,3 +64,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1232283406]
 environment = SubResource("Environment_main")
+
+[node name="PickupDemo" parent="." instance=ExtResource("2_pickups")]

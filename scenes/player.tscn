@@ -14,7 +14,7 @@ radius = 0.35
 height = 1.8
 
 ; 玩家实体：CharacterBody3D；原点在脚底，移动与视角逻辑由挂载脚本承担
-[node name="Player" type="CharacterBody3D" unique_id=826548767]
+[node name="Player" type="CharacterBody3D" unique_id=826548767 groups=["player"]]
 script = ExtResource("1_player")
 
 ; 碰撞形状：整体上移 0.90 米（即 1.80 ÷ 2），使胶囊底面正好落在脚底所在的 Y = 0

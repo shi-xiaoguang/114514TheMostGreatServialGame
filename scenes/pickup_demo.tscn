@@ -1,0 +1,21 @@
+; 从旧 world.tscn 抽出的三个拾取示例；相对位置、定义与数量保持原样。
+; 正式主场景和基础世界复用同一份示例，避免复制内容后发生分叉。
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/world_item.tscn" id="1_item"]
+[ext_resource type="Resource" path="res://resources/items/wood.tres" id="2_wood"]
+[ext_resource type="Resource" path="res://resources/items/stone.tres" id="3_stone"]
+
+[node name="PickupDemo" type="Node3D"]
+
+[node name="WoodItem1" parent="." instance=ExtResource("1_item")]
+position = Vector3(2, 0.15, -2)
+definition = ExtResource("2_wood")
+
+[node name="WoodItem2" parent="." instance=ExtResource("1_item")]
+position = Vector3(-2, 0.15, -3)
+definition = ExtResource("2_wood")
+
+[node name="StoneItem1" parent="." instance=ExtResource("1_item")]
+position = Vector3(0, 0.15, -5)
+definition = ExtResource("3_stone")
