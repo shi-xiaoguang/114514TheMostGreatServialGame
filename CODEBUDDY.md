@@ -6,7 +6,7 @@
 
 - 本机正式仓库：`D:\GitProjiect\Godot\114514TheMostGreatServialGame`。
 - 在 CodeBuddy 中打开本目录，或本目录的 `Robinson.code-workspace`；工作区只包含此仓库。
-- `D:\Godot-AI-Lab` 保存历史资料；其中 `robinson` 是旧工程及待移植成果来源，不作为日常开发、运行或提交目录。
+- `D:\Godot-AI-Lab` 保存历史资料与备份；其中旧 `robinson` 工程已迁移并清理，不再作为开发、运行或提交目录。
 - 若从旧目录进入，直接切换到正式仓库并读取本入口；不要重新询问已经确定的主线。后续明确授权的独立工作树按当次任务记录执行。
 
 ## 每次任务开始
@@ -30,5 +30,6 @@
 - `D:\Godot-AI-Lab\.codebuddy\plans`：历史计划。
 - `D:\Godot-AI-Lab\Robinson_Project_Advisor_Handoff_v1.0.md`：交接快照，其过时结论以当前代码、有效决定和验证记录校正。
 - `D:\Godot-AI-Lab\archive\2026-10-11-workspace-entry`：入口统一前的规则及 CodeBuddy 入口原文。
+- `D:\Godot-AI-Lab\archive\2026-10-11-robinson-before-integration.zip`：清理前旧工程完整备份，附同名 `.manifest.json` 校验清单。
 
 历史文件保持原貌；涉及当前状态的更新统一写入正式仓库。

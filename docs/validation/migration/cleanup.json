@@ -1,0 +1,16 @@
+{
+  "CompletedAt": "2026-10-11T14:24:50.5527943+08:00",
+  "RemovedDirectory": "D:\\Godot-AI-Lab\\robinson",
+  "VerifiedArchivedFileCount": 139,
+  "Archive": "D:\\Godot-AI-Lab\\archive\\2026-10-11-robinson-before-integration.zip",
+  "ArchiveSHA256": "0AF179476DF101E8BF0DF96AAE19B0BDF62E1227A8555652F00A323D1D4AF43E",
+  "FeatureCommit": "f1e5a5548d3759a5069db423036e62920579f213",
+  "OldDirectoryExists": false,
+  "HistoricalLabDocumentsRetained": true,
+  "PostCleanupMainSceneSmoke": {
+    "CompletedAt": "2026-10-11T14:27:19.3424030+08:00",
+    "Frames": 240,
+    "ExitCode": 0,
+    "ProjectErrors": 0
+  }
+}
