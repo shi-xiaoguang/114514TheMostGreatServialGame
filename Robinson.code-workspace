@@ -1,0 +1,12 @@
+{
+  "folders": [
+    {
+      "name": "Robinson 正式主线",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "terminal.integrated.cwd": "${workspaceFolder}",
+    "window.title": "Robinson 正式主线${separator}${appName}"
+  }
+}
