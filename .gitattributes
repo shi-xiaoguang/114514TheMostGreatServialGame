@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Preserve the pinned upstream snapshot byte for byte on every platform.
+workflow/vendor/godot-game-dev-studio/** -text

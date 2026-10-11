@@ -1,0 +1,224 @@
+{
+  "baseline_commit": "bd024efade01948fb18a344a5aff7296be951fbf",
+  "user_changes": [
+    "project.godot",
+    "scripts/player.gd"
+  ],
+  "files": [
+    {
+      "before": "project.godot",
+      "after": "game/project.godot",
+      "sha256": "53f88c54d3f9847d985d7eec11ada9d63c52e7dc25b00af3756428adf58833f6"
+    },
+    {
+      "before": "icon.svg",
+      "after": "game/icon.svg",
+      "sha256": "6c80384360a5b269d1054bfb27241258154e2cc8167c522016fdc1820e84e0f8"
+    },
+    {
+      "before": "icon.svg.import",
+      "after": "game/icon.svg.import",
+      "sha256": "8a1b6eef1246f69d3c38085c8df376475143445c31b03790846b792928293974"
+    },
+    {
+      "before": "resources/items/berry.tres",
+      "after": "game/resources/items/berry.tres",
+      "sha256": "43a837d5405b72fb0a87cfd002a2c2bb3eb181d7e1f1b073fad9a63ad29563b0"
+    },
+    {
+      "before": "resources/items/stone_axe.tres",
+      "after": "game/resources/items/stone_axe.tres",
+      "sha256": "b0acb0099d396288e0daa203c8f20adaeea46081185f0e9df2800ce659b0c9f5"
+    },
+    {
+      "before": "resources/items/stone.tres",
+      "after": "game/resources/items/stone.tres",
+      "sha256": "ff34fa4f24b5b2710d3f2dd02e0e9ccafcf91236c415cde17315452eeeca5a21"
+    },
+    {
+      "before": "resources/items/wood.tres",
+      "after": "game/resources/items/wood.tres",
+      "sha256": "c38f4957ce4253672db9c2740b42b49103f7e0e93c8e39b0a947672008f0addf"
+    },
+    {
+      "before": "scenes/movement_test.tscn",
+      "after": "game/scenes/movement_test.tscn",
+      "sha256": "1f97a8efc8d5248e514353ae63e004fb746a079f686d5aa4a9196135f5554b13"
+    },
+    {
+      "before": "scenes/pickup_demo.tscn",
+      "after": "game/scenes/pickup_demo.tscn",
+      "sha256": "7b6dd72855b1860146ab549262465555a04153caa7518125b8f87c3010d461e8"
+    },
+    {
+      "before": "scenes/player.tscn",
+      "after": "game/scenes/player.tscn",
+      "sha256": "72d5103df6947ef1d7eb4a323163065d9034f0d62baaec13abc1765c4f9d45f8"
+    },
+    {
+      "before": "scenes/world_item.tscn",
+      "after": "game/scenes/world_item.tscn",
+      "sha256": "254b5a67c3a4413e0407046a4e6d0e102053a89232c89b30c672444bccd16187"
+    },
+    {
+      "before": "scenes/world.tscn",
+      "after": "game/scenes/world.tscn",
+      "sha256": "e427d9e7e38bf8d8dc1c1e2f1dee25e43f3a523b76787a13c1b864651f0c11ed"
+    },
+    {
+      "before": "scenes/ui/inventory_slot.tscn",
+      "after": "game/scenes/ui/inventory_slot.tscn",
+      "sha256": "851c35cfeddd5fc22d7dea66bf5dc1bd9bc6b91b9830d01de8289454554485aa"
+    },
+    {
+      "before": "scenes/ui/inventory_ui.tscn",
+      "after": "game/scenes/ui/inventory_ui.tscn",
+      "sha256": "0e47922f1355bf6b2e1ec246babf19fbf3f33128094c39bb6e3d1cf1f37dd7eb"
+    },
+    {
+      "before": "scripts/player.gd",
+      "after": "game/scripts/player.gd",
+      "sha256": "bc0f2ea9118172df9e9dcdeddf48dc9773e2c880df6c1167ed4f053d11dd7876"
+    },
+    {
+      "before": "scripts/player.gd.uid",
+      "after": "game/scripts/player.gd.uid",
+      "sha256": "ad8f4a8019efb0064437c968021ec1195a7e2d84eef8659aa86f090b68b625db"
+    },
+    {
+      "before": "scripts/interaction/world_item.gd",
+      "after": "game/scripts/interaction/world_item.gd",
+      "sha256": "3c78b2b318e55c78acb1ccdcd2265cf91b6741ad2316240ee75948b8742cab64"
+    },
+    {
+      "before": "scripts/interaction/world_item.gd.uid",
+      "after": "game/scripts/interaction/world_item.gd.uid",
+      "sha256": "f9093bf0df44bd55a678d5ada92508b73863defa40c09c0b61242992b301b837"
+    },
+    {
+      "before": "scripts/inventory/inventory_manager.gd",
+      "after": "game/scripts/inventory/inventory_manager.gd",
+      "sha256": "49ac2d326f720f26c17d59a36ec33c9cce5a2b1f1d34c21288942365c9219f14"
+    },
+    {
+      "before": "scripts/inventory/inventory_manager.gd.uid",
+      "after": "game/scripts/inventory/inventory_manager.gd.uid",
+      "sha256": "c6f6f60f00bf0721a0069f9383e4d272cac49bb4afc2205b12d71f324c338a3f"
+    },
+    {
+      "before": "scripts/inventory/inventory.gd",
+      "after": "game/scripts/inventory/inventory.gd",
+      "sha256": "c8b20fa422e247c74e20869481332ce0d87686999760a6fddeb1e86e6a6db572"
+    },
+    {
+      "before": "scripts/inventory/inventory.gd.uid",
+      "after": "game/scripts/inventory/inventory.gd.uid",
+      "sha256": "baebe637d8dd0e7f58fd982ec04fcf70a262c7d722a12f211273b85941af6ef5"
+    },
+    {
+      "before": "scripts/inventory/item_stack.gd",
+      "after": "game/scripts/inventory/item_stack.gd",
+      "sha256": "423e4e1dd6a78f5662252d79972c321a3c48e44879308d64254cd08d0ca103a5"
+    },
+    {
+      "before": "scripts/inventory/item_stack.gd.uid",
+      "after": "game/scripts/inventory/item_stack.gd.uid",
+      "sha256": "2a2e4a6909e9feb752edbf3959c7e933f441f3adae23ce4499f8c8793fba5440"
+    },
+    {
+      "before": "scripts/items/item_definition.gd",
+      "after": "game/scripts/items/item_definition.gd",
+      "sha256": "8cfdf126ca6f417658461d38ab8445ab2661d04acf86a663917b2269bd85fa61"
+    },
+    {
+      "before": "scripts/items/item_definition.gd.uid",
+      "after": "game/scripts/items/item_definition.gd.uid",
+      "sha256": "911793b454dc1825f3635549adc2bd65d345a9c3c25422d3d3c7ca785e19d61a"
+    },
+    {
+      "before": "scripts/ui/inventory_slot.gd",
+      "after": "game/scripts/ui/inventory_slot.gd",
+      "sha256": "17435f31e65cf407cefe9ce716b27d0715d494426955c14b584866462d65d65e"
+    },
+    {
+      "before": "scripts/ui/inventory_slot.gd.uid",
+      "after": "game/scripts/ui/inventory_slot.gd.uid",
+      "sha256": "36f978e5ffdf7003aa12999f6a78459b334b8ac5ffd6abf4a3e682e8ff117585"
+    },
+    {
+      "before": "scripts/ui/inventory_ui.gd",
+      "after": "game/scripts/ui/inventory_ui.gd",
+      "sha256": "6e3bccafc7b996dca7844582495c445c4c4b1d8edb3778a94962bbcad95042ed"
+    },
+    {
+      "before": "scripts/ui/inventory_ui.gd.uid",
+      "after": "game/scripts/ui/inventory_ui.gd.uid",
+      "sha256": "eb0c904813380c699d817d840a0d4837d30665087c4b5916762909ff0354aa23"
+    },
+    {
+      "before": "tests/interaction_driver.gd",
+      "after": "game/tests/interaction_driver.gd",
+      "sha256": "aff24e90b8028818fa872f99bcf0387eebbd5499adc1a8488a5e3184874bfbea"
+    },
+    {
+      "before": "tests/interaction_driver.gd.uid",
+      "after": "game/tests/interaction_driver.gd.uid",
+      "sha256": "870c8a23683384e16d7cb9c62db9d2a46b3a854870dc3ed823f17ff8b3efe7a3"
+    },
+    {
+      "before": "tests/interaction_test.tscn",
+      "after": "game/tests/interaction_test.tscn",
+      "sha256": "a62963612a176151fffbbcb592aabb7c5b31d97845e703bf8dc91f9cdd067b02"
+    },
+    {
+      "before": "tests/movement_driver.gd",
+      "after": "game/tests/movement_driver.gd",
+      "sha256": "8b994ca0b8e217811409af55c6bd1e548745d7243d77a4b5f039938ae0aed50d"
+    },
+    {
+      "before": "tests/movement_driver.gd.uid",
+      "after": "game/tests/movement_driver.gd.uid",
+      "sha256": "0829a4650707b912c43664e669aa9d941e360f5045361f3f1cccbc195b30f166"
+    },
+    {
+      "before": "tests/movement_test.tscn",
+      "after": "game/tests/movement_test.tscn",
+      "sha256": "720c12f9db0a076984a98bd87fc39b2c319d14bf680b81a71e5bd20b2f440e2e"
+    },
+    {
+      "before": "tests/test_inventory.gd",
+      "after": "game/tests/test_inventory.gd",
+      "sha256": "9d477451cbeaa0c8432f6eff53604ddd22fe9705dcc65e1432b701a6343d2de8"
+    },
+    {
+      "before": "tests/test_inventory.gd.uid",
+      "after": "game/tests/test_inventory.gd.uid",
+      "sha256": "f2253588f36b865cef5727d856386714311191d92b390cbb0047ede094f5a3ab"
+    },
+    {
+      "before": "tests/test_item_definition.gd",
+      "after": "game/tests/test_item_definition.gd",
+      "sha256": "7486acfa40cd434039efe74254d4af8670ee4e39e3aaf6202bbfc9cf98d6559f"
+    },
+    {
+      "before": "tests/test_item_definition.gd.uid",
+      "after": "game/tests/test_item_definition.gd.uid",
+      "sha256": "2632b0f3d0eff85f7efbdf71a8250bcbe2eccf441b6fadf2c5f0e5ac1c4cdc29"
+    },
+    {
+      "before": "tests/ui_driver.gd",
+      "after": "game/tests/ui_driver.gd",
+      "sha256": "6ca82aef23a7fe4c7e5d8aff8be8838e246a7b02efd89461b89b170f15dc9616"
+    },
+    {
+      "before": "tests/ui_driver.gd.uid",
+      "after": "game/tests/ui_driver.gd.uid",
+      "sha256": "5d267bf64afdb51d520daf36104e1c7c3332552fb17de00670816b56c5e6b623"
+    },
+    {
+      "before": "tests/ui_test.tscn",
+      "after": "game/tests/ui_test.tscn",
+      "sha256": "f6d965822d2f2bad8d60e9e8900b47fd78f97b80b7caeb88ec25b48c3aac90b7"
+    }
+  ]
+}

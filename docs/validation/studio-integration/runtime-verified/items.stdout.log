@@ -1,0 +1,116 @@
+Godot Engine v4.7.2.stable.steam.ed1daf0bf - https://godotengine.org
+
+[ITEM-01] 无头验证开始；引擎版本 = 4.7.2-stable (steam)
+[PASS] ItemType 枚举可从 item_definition.gd 读取
+[PASS] MATERIAL 字面量 = 0
+[PASS] TOOL 字面量 = 1
+[PASS] CONSUMABLE 字面量 = 2
+[PASS] EQUIPMENT 字面量 = 3
+[ITEM-01] ItemType 枚举实测 = { "MATERIAL": 0, "TOOL": 1, "CONSUMABLE": 2, "EQUIPMENT": 3 }
+[ITEM-01] ---- 用例：res://resources/items/wood.tres ----
+[PASS] 资源可加载：res://resources/items/wood.tres
+[PASS] res://resources/items/wood.tres 由 item_definition.gd 驱动
+    实测：id=wood name=木头 type=0 max_stack=99 tags=[wood,fuel,building] description=从树木上取得的木料，可用于生火，也可用于搭建简陋设施。
+    预期：id=wood name=木头 type=0 max_stack=99 tags=[wood,fuel,building]
+    预留字段实测：icon=<null> metadata={  }
+[PASS] res://resources/items/wood.tres → id 正确
+[PASS] res://resources/items/wood.tres → display_name 正确
+[PASS] res://resources/items/wood.tres → type 正确
+[PASS] res://resources/items/wood.tres → max_stack 正确
+[PASS] res://resources/items/wood.tres → tags 集合正确
+[PASS] res://resources/items/wood.tres → icon 预留且默认为空
+[PASS] res://resources/items/wood.tres → metadata 为 Dictionary
+[PASS] res://resources/items/wood.tres → metadata 默认为空
+[PASS] res://resources/items/wood.tres → is_valid() = true
+[PASS] res://resources/items/wood.tres → is_stackable() 正确
+[PASS] res://resources/items/wood.tres → get_display_name() 非空
+[ITEM-01] ---- 用例：res://resources/items/stone.tres ----
+[PASS] 资源可加载：res://resources/items/stone.tres
+[PASS] res://resources/items/stone.tres 由 item_definition.gd 驱动
+    实测：id=stone name=石头 type=0 max_stack=99 tags=[stone,building] description=从地面或岩壁上捡到的石块，是建造与制作的基础材料。
+    预期：id=stone name=石头 type=0 max_stack=99 tags=[stone,building]
+    预留字段实测：icon=<null> metadata={  }
+[PASS] res://resources/items/stone.tres → id 正确
+[PASS] res://resources/items/stone.tres → display_name 正确
+[PASS] res://resources/items/stone.tres → type 正确
+[PASS] res://resources/items/stone.tres → max_stack 正确
+[PASS] res://resources/items/stone.tres → tags 集合正确
+[PASS] res://resources/items/stone.tres → icon 预留且默认为空
+[PASS] res://resources/items/stone.tres → metadata 为 Dictionary
+[PASS] res://resources/items/stone.tres → metadata 默认为空
+[PASS] res://resources/items/stone.tres → is_valid() = true
+[PASS] res://resources/items/stone.tres → is_stackable() 正确
+[PASS] res://resources/items/stone.tres → get_display_name() 非空
+[ITEM-01] ---- 用例：res://resources/items/berry.tres ----
+[PASS] 资源可加载：res://resources/items/berry.tres
+[PASS] res://resources/items/berry.tres 由 item_definition.gd 驱动
+    实测：id=berry name=浆果 type=2 max_stack=20 tags=[food] description=野生的可食用浆果，用于果腹。
+    预期：id=berry name=浆果 type=2 max_stack=20 tags=[food]
+    预留字段实测：icon=<null> metadata={  }
+[PASS] res://resources/items/berry.tres → id 正确
+[PASS] res://resources/items/berry.tres → display_name 正确
+[PASS] res://resources/items/berry.tres → type 正确
+[PASS] res://resources/items/berry.tres → max_stack 正确
+[PASS] res://resources/items/berry.tres → tags 集合正确
+[PASS] res://resources/items/berry.tres → icon 预留且默认为空
+[PASS] res://resources/items/berry.tres → metadata 为 Dictionary
+[PASS] res://resources/items/berry.tres → metadata 默认为空
+[PASS] res://resources/items/berry.tres → is_valid() = true
+[PASS] res://resources/items/berry.tres → is_stackable() 正确
+[PASS] res://resources/items/berry.tres → get_display_name() 非空
+[ITEM-01] ---- 用例：res://resources/items/stone_axe.tres ----
+[PASS] 资源可加载：res://resources/items/stone_axe.tres
+[PASS] res://resources/items/stone_axe.tres 由 item_definition.gd 驱动
+    实测：id=stone_axe name=石斧 type=1 max_stack=1 tags=[tool,cutting,wood_processing] description=用木料与石块粗糙绑扎成的斧头，可用于砍伐与加工木料。
+    预期：id=stone_axe name=石斧 type=1 max_stack=1 tags=[tool,cutting,wood_processing]
+    预留字段实测：icon=<null> metadata={  }
+[PASS] res://resources/items/stone_axe.tres → id 正确
+[PASS] res://resources/items/stone_axe.tres → display_name 正确
+[PASS] res://resources/items/stone_axe.tres → type 正确
+[PASS] res://resources/items/stone_axe.tres → max_stack 正确
+[PASS] res://resources/items/stone_axe.tres → tags 集合正确
+[PASS] res://resources/items/stone_axe.tres → icon 预留且默认为空
+[PASS] res://resources/items/stone_axe.tres → metadata 为 Dictionary
+[PASS] res://resources/items/stone_axe.tres → metadata 默认为空
+[PASS] res://resources/items/stone_axe.tres → is_valid() = true
+[PASS] res://resources/items/stone_axe.tres → is_stackable() 正确
+[PASS] res://resources/items/stone_axe.tres → get_display_name() 非空
+[ITEM-01] ---- 用例：has_tag 标签查询 ----
+[PASS] 资源可加载：res://resources/items/wood.tres
+[PASS] 资源可加载：res://resources/items/stone.tres
+[PASS] 资源可加载：res://resources/items/berry.tres
+[PASS] 资源可加载：res://resources/items/stone_axe.tres
+[PASS] 木头 has_tag(wood) = true
+[PASS] 木头 has_tag(fuel) = true
+[PASS] 木头 has_tag(building) = true
+[PASS] 木头 has_tag(stone) = false
+[PASS] 木头 has_tag(food) = false
+[PASS] 木头 has_tag(Wood) 大小写不敏感
+[PASS] 木头 has_tag(WOOD) 大小写不敏感
+[PASS] 木头 has_tag(fUeL) 大小写不敏感
+[PASS] 石头 has_tag(stone) = true
+[PASS] 石头 has_tag(fuel) = false
+[PASS] 浆果 has_tag(food) = true
+[PASS] 浆果 has_tag(wood) = false
+[PASS] 石斧 has_tag(tool) = true
+[PASS] 石斧 has_tag(cutting) = true
+[PASS] 石斧 has_tag(wood_processing) = true
+[PASS] 石斧 type = TOOL
+[PASS] 石斧 has_tag(building) = false（工具不承担材料标签）
+[PASS] 石斧 has_tag(wood) = false（工具不承担材料标签）
+[PASS] 空标签 has_tag("") = false
+[PASS] 未知标签 has_tag(no_such_tag) = false
+[ITEM-01] ---- 用例：is_valid / get_display_name 边界 ----
+[PASS] 空定义 is_valid() = false
+[PASS] 空定义 get_display_name() 回退为占位文本
+[PASS] 堆叠上限为 0 的定义 is_valid() = false
+[PASS] 合法定义 is_valid() = true
+[PASS] 未填显示名时回退为 id
+[PASS] 堆叠上限为 1 时 is_stackable() = false
+[ITEM-01] ---- 物品定义清单（res://resources/items/）----
+    res://resources/items/wood.tres -> id=wood name=木头 type=0 max_stack=99 tags=[wood,fuel,building]
+    res://resources/items/stone.tres -> id=stone name=石头 type=0 max_stack=99 tags=[stone,building]
+    res://resources/items/berry.tres -> id=berry name=浆果 type=2 max_stack=20 tags=[food]
+    res://resources/items/stone_axe.tres -> id=stone_axe name=石斧 type=1 max_stack=1 tags=[tool,cutting,wood_processing]
+[ITEM-01] 类型汇总：Material / Tool / Consumable 三类均有示例资源，Equipment 按批准暂不使用
+[ITEM-01] 汇总：PASS = 87，FAIL = 0

@@ -1,0 +1,81 @@
+WARNING: [WorldItem] 背包放不下 木头，本次拾取失败，背包未改变。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] _try_pick_up (res://scripts/interaction/world_item.gd:155)
+       [1] _unhandled_input (res://scripts/interaction/world_item.gd:70)
+       [2] _send_interact (res://tests/interaction_driver.gd:142)
+       [3] _press_interact (res://tests/interaction_driver.gd:132)
+       [4] _case_full_capacity_no_loss (res://tests/interaction_driver.gd:350)
+       [5] _wait_frames (res://tests/interaction_driver.gd:128)
+WARNING: [WorldItem] 背包放不下 木头，本次拾取失败，背包未改变。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] _try_pick_up (res://scripts/interaction/world_item.gd:155)
+       [1] _unhandled_input (res://scripts/interaction/world_item.gd:70)
+       [2] _send_interact (res://tests/interaction_driver.gd:142)
+       [3] _press_interact (res://tests/interaction_driver.gd:132)
+       [4] _case_partial_capacity (res://tests/interaction_driver.gd:370)
+       [5] _wait_frames (res://tests/interaction_driver.gd:128)
+WARNING: [WorldItem] 节点 WorldItem 未配置 ItemDefinition，本次拾取已忽略。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] _try_pick_up (res://scripts/interaction/world_item.gd:142)
+       [1] _unhandled_input (res://scripts/interaction/world_item.gd:70)
+       [2] _send_interact (res://tests/interaction_driver.gd:142)
+       [3] _press_interact (res://tests/interaction_driver.gd:132)
+       [4] _case_null_definition (res://tests/interaction_driver.gd:386)
+       [5] _wait_frames (res://tests/interaction_driver.gd:128)
+WARNING: [WorldItem] 背包放不下 木头，本次拾取失败，背包未改变。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] _try_pick_up (res://scripts/interaction/world_item.gd:155)
+       [1] _unhandled_input (res://scripts/interaction/world_item.gd:70)
+       [2] _send_interact (res://tests/interaction_driver.gd:142)
+       [3] _press_interact (res://tests/interaction_driver.gd:132)
+       [4] _case_two_stacks_unchanged (res://tests/interaction_driver.gd:455)
+       [5] _wait_frames (res://tests/interaction_driver.gd:128)
+WARNING: [WorldItem] 背包放不下 木头，本次拾取失败，背包未改变。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] _try_pick_up (res://scripts/interaction/world_item.gd:155)
+       [1] _unhandled_input (res://scripts/interaction/world_item.gd:70)
+       [2] _send_interact (res://tests/interaction_driver.gd:142)
+       [3] _press_interact (res://tests/interaction_driver.gd:132)
+       [4] _case_two_stacks_unchanged (res://tests/interaction_driver.gd:456)
+       [5] _wait_frames (res://tests/interaction_driver.gd:128)
+WARNING: [WorldItem] 节点 WorldItem 的物品定义或数量无效，本次拾取已忽略。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] _try_pick_up (res://scripts/interaction/world_item.gd:145)
+       [1] _unhandled_input (res://scripts/interaction/world_item.gd:70)
+       [2] _send_interact (res://tests/interaction_driver.gd:142)
+       [3] _press_interact (res://tests/interaction_driver.gd:132)
+       [4] _case_invalid_configuration (res://tests/interaction_driver.gd:519)
+       [5] _wait_frames (res://tests/interaction_driver.gd:128)
+WARNING: [WorldItem] 节点 WorldItem 的物品定义或数量无效，本次拾取已忽略。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] _try_pick_up (res://scripts/interaction/world_item.gd:145)
+       [1] _unhandled_input (res://scripts/interaction/world_item.gd:70)
+       [2] _send_interact (res://tests/interaction_driver.gd:142)
+       [3] _press_interact (res://tests/interaction_driver.gd:132)
+       [4] _case_invalid_configuration (res://tests/interaction_driver.gd:519)
+       [5] _wait_frames (res://tests/interaction_driver.gd:128)
+WARNING: [WorldItem] 节点 WorldItem 的物品定义或数量无效，本次拾取已忽略。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] _try_pick_up (res://scripts/interaction/world_item.gd:145)
+       [1] _unhandled_input (res://scripts/interaction/world_item.gd:70)
+       [2] _send_interact (res://tests/interaction_driver.gd:142)
+       [3] _press_interact (res://tests/interaction_driver.gd:132)
+       [4] _case_invalid_configuration (res://tests/interaction_driver.gd:530)
+       [5] _wait_frames (res://tests/interaction_driver.gd:128)
+WARNING: [WorldItem] 节点 WorldItem 的物品定义或数量无效，本次拾取已忽略。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] _try_pick_up (res://scripts/interaction/world_item.gd:145)
+       [1] _unhandled_input (res://scripts/interaction/world_item.gd:70)
+       [2] _send_interact (res://tests/interaction_driver.gd:142)
+       [3] _press_interact (res://tests/interaction_driver.gd:132)
+       [4] _case_invalid_configuration (res://tests/interaction_driver.gd:530)
+       [5] _wait_frames (res://tests/interaction_driver.gd:128)

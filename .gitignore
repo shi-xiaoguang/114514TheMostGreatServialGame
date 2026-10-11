@@ -17,3 +17,16 @@ mono_crash.*.json
 
 # Machine-local MCP executable paths and environment settings
 .mcp.json
+
+# Machine-local skill discovery links; source is tracked only under workflow/vendor.
+/.agents/skills
+/.codebuddy/skills
+/workflow/local-settings.json
+/workflow/.cache/
+/workflow/skills/
+__pycache__/
+*.pyc
+
+# The upstream snapshot includes one tracked bytecode reference; preserve its exact inventory.
+!/workflow/vendor/godot-game-dev-studio/**/__pycache__/
+!/workflow/vendor/godot-game-dev-studio/**/*.pyc

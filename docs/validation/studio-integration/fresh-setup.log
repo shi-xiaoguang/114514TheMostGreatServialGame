@@ -1,0 +1,14 @@
+Generated 189 adapters; updated 0 files; removed 0 stale managed files.
+.agents/skills -> workflow/skills
+.codebuddy/skills -> workflow/skills
+[PASS] layout
+[PASS] upstream_snapshot
+[PASS] skill_catalog
+  WARNING: Preserved upstream duplicate name: godot-navigation-pathfinding (2 entries)
+  WARNING: Upstream index omits 94 skill directories; local index covers all 189
+  WARNING: Upstream frontmatter collision corrected in local adapter: godot-ai-navigation
+[PASS] entry_routes
+[PASS] game_resources
+[PASS] native_skill_routes
+6/6 check groups passed.
+Setup complete. Start a new Codex or CodeBuddy session to refresh its skill catalog.

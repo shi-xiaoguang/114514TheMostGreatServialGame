@@ -1,35 +1,24 @@
-# Robinson 执行入口
+# Robinson 执行入口（Codex / CodeBuddy 共用）
 
-本文件是本仓库的 CodeBuddy 规则入口。2026-10-11，主创已授权统一执行入口、规则入口和 Git 工程位置，随后授权将旧工程成果分批迁入、验证、提交 Git，再清理旧工程。
+## 开始任务
 
-## 正式工作区
+1. 读取 [AI_TEAM_RULES.md](AI_TEAM_RULES.md)（v0.3），再读取 [PROJECT_STATUS.md](PROJECT_STATUS.md)。
+2. 核实工作目录、Git 根、分支、提交和未提交改动；保留已有用户改动。
+3. 按 [工作流说明](workflow/README.md) 从本仓库固定版本的技能库中选取最小技能集合，再读取对应 `SKILL.md`。项目内版本优先于用户级旧副本。
+4. 明确本次目标、改动范围、验收方式，再执行。最新用户授权优先于历史计划。
 
-- 本机正式仓库：`D:\GitProjiect\Godot\114514TheMostGreatServialGame`。
-- 在 CodeBuddy 中打开本目录，或本目录的 `Robinson.code-workspace`；工作区只包含此仓库。
-- `D:\Godot-AI-Lab` 保存历史资料与备份；其中旧 `robinson` 工程已迁移并清理，不再作为开发、运行或提交目录。
-- 若从旧目录进入，直接切换到正式仓库并读取本入口；不要重新询问已经确定的主线。后续明确授权的独立工作树按当次任务记录执行。
+## 唯一工作区与工程
 
-## 每次任务开始
+- **工作区 / Git 根**：本目录。可打开 `Robinson.code-workspace`。
+- **Godot 工程根**：`game/`，入口 `game/project.godot`；游戏内 `res://` 对应 `game/`。
+- **技能与工具**：`workflow/`；完整上游源码位于 `workflow/vendor/godot-game-dev-studio/`。
+- 终端、编辑器及 Godot MCP 必须明确使用 `<仓库>/game` 作为工程路径。禁止在仓库根或技能库示例工程中运行游戏。
+- `.mcp.json` 与 `workflow/local-settings.json` 是本机设置，不提交 Git。配置存在不代表应用内 MCP 已连接。
+- `D:\Godot-AI-Lab` 仅保存历史资料与备份；不得恢复旧 `robinson` 为日常工程。
 
-1. 读取根目录 `AI_TEAM_RULES.md`（现行 v0.2.1，正式生效）。规则正文只在该文件维护；本入口不复制审批、岗位和验证条文。
-2. 读取 `PROJECT_STATUS.md`，按需读取 `README.md`、对应系统规格和历史决定。
-3. 核实实际目录、Git 根、分支、提交和未提交改动。可用 `Get-Location`、`git rev-parse --show-toplevel`、`git branch --show-current`、`git log -1 --oneline`、`git status --short`。现有用户改动必须保留。
-4. 开始实现前明确本任务目标、改动范围及验收方式。历史计划中的路径、待办状态、阶段限制必须结合当前授权和代码核对，不能直接当作最新任务。
+## 执行与收尾
 
-## 执行和收尾
-
-- 编辑、终端、Godot 运行及测试都以当前正式仓库为工程根。调用 Godot 命令或 MCP 时显式指定本仓库路径；不能因旧工程同名而选错。
-- CodeBuddy 的 Godot MCP 使用本机根目录 `.mcp.json`；它是本机配置，不纳入 Git。既有岗位技能在用户级 `C:\Users\Lenovo\.codebuddy\skills`，按守则按需读取。
-- `project.godot`、主场景和玩家脚本的并行修改由一个集成负责人协调；不要从旧工程整文件覆盖这些文件。保存场景前确认编辑器实际打开的工程，避免旧窗口覆盖新文件。
-- 任务完成后运行与改动相匹配的检查，记录实际工程、代码版本、测试入口、结果及证据位置；常驻回归脚本保留在仓库中，不再用后删除。
-- 依据结果更新 `PROJECT_STATUS.md` 的相关条目。已实现、已验证、已验收分别记录；历史测试数字不能代替当前版本的验证。
-- 开始时说明实际读到的守则版本；收尾按守则报告结果、未解决项、已使用技能和待批事项。已在当前任务获准的事项无需反复确认。
-
-## 历史来源
-
-- `D:\Godot-AI-Lab\.codebuddy\plans`：历史计划。
-- `D:\Godot-AI-Lab\Robinson_Project_Advisor_Handoff_v1.0.md`：交接快照，其过时结论以当前代码、有效决定和验证记录校正。
-- `D:\Godot-AI-Lab\archive\2026-10-11-workspace-entry`：入口统一前的规则及 CodeBuddy 入口原文。
-- `D:\Godot-AI-Lab\archive\2026-10-11-robinson-before-integration.zip`：清理前旧工程完整备份，附同名 `.manifest.json` 校验清单。
-
-历史文件保持原貌；涉及当前状态的更新统一写入正式仓库。
+- 同一文件只安排一个修改者；共享文件由集成负责人收口。
+- 测试入口：`workflow/scripts/run-tests.ps1`；结构检查：`workflow/scripts/validate-workspace.py`。
+- 游戏测试常驻 `game/tests/`，不能按旧历史说明删除。新日志独立保存，不覆盖历史证据。
+- 收尾更新唯一当前状态页 `PROJECT_STATUS.md`，给出结果、证据、未解决项、已用技能及待批事项。

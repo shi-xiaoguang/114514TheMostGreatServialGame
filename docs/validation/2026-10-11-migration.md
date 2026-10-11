@@ -1,5 +1,7 @@
 # 旧工程分批迁移验证
 
+> 历史验证记录：本记录完成后，游戏整体移至 `game/`，测试入口改为 `workflow/scripts/run-tests.ps1`。下文路径与日志保持当时记录；当前验证见 [工作流整合验证](2026-10-11-studio-integration.md)。
+
 日期：2026-10-11。唯一正式工程为本仓库。引擎：Godot 4.7.2.stable.steam.ed1daf0bf；场景测试使用 60Hz。
 
 迁移前完整备份位于 `D:/Godot-AI-Lab/archive/2026-10-11-robinson-before-integration.zip`，139 个文件逐项 SHA256 验证一致；清单位于同名 `.manifest.json`。旧玩家控制器不覆盖当前 PLAYER-04.3。

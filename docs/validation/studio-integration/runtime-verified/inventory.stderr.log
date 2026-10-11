@@ -1,0 +1,35 @@
+WARNING: [Inventory] add_item 收到空的 ItemDefinition，本次请求已忽略。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] add_item (res://scripts/inventory/inventory.gd:40)
+       [1] _case_invalid_requests (res://tests/test_inventory.gd:277)
+       [2] _run_unit_tests (res://tests/test_inventory.gd:130)
+       [3] _init (res://tests/test_inventory.gd:60)
+WARNING: [Inventory] add_item 收到无效的 ItemDefinition，本次请求已忽略。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] add_item (res://scripts/inventory/inventory.gd:44)
+       [1] _case_invalid_requests (res://tests/test_inventory.gd:284)
+       [2] _run_unit_tests (res://tests/test_inventory.gd:130)
+       [3] _init (res://tests/test_inventory.gd:60)
+WARNING: [Inventory] add_item 收到无效的 ItemDefinition，本次请求已忽略。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] add_item (res://scripts/inventory/inventory.gd:44)
+       [1] _case_invalid_requests (res://tests/test_inventory.gd:288)
+       [2] _run_unit_tests (res://tests/test_inventory.gd:130)
+       [3] _init (res://tests/test_inventory.gd:60)
+WARNING: [Inventory] add_item 收到无效的 ItemDefinition，本次请求已忽略。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] add_item (res://scripts/inventory/inventory.gd:44)
+       [1] _case_invalid_requests (res://tests/test_inventory.gd:290)
+       [2] _run_unit_tests (res://tests/test_inventory.gd:130)
+       [3] _init (res://tests/test_inventory.gd:60)
+WARNING: [Inventory] add_item 收到空的 ItemDefinition，本次请求已忽略。
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] add_item (res://scripts/inventory/inventory.gd:40)
+       [1] _case_changed_signal (res://tests/test_inventory.gd:331)
+       [2] _run_unit_tests (res://tests/test_inventory.gd:132)
+       [3] _init (res://tests/test_inventory.gd:60)

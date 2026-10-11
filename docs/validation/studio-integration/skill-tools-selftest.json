@@ -1,0 +1,36 @@
+{
+  "timestamp_utc": "2026-10-11T07:02:39.475115+00:00",
+  "status": "pass",
+  "passed": 20,
+  "expected": 20,
+  "cases": [
+    "valid byte snapshot",
+    "CRLF-to-LF tampering detected",
+    "extra upstream file detected",
+    "nested Git detected",
+    "manifest path traversal rejected",
+    "valid literals pass and dynamic literals disclosed",
+    "missing resource detected",
+    "escaping resource rejected",
+    "optional/required missing links distinguished",
+    "generate all 189 routes",
+    "check is read-only",
+    "regeneration is deterministic/idempotent",
+    "user adapter edit blocks writes and is preserved",
+    "check detects changed adapter without writing",
+    "unmanaged file blocks writes and is preserved",
+    "stale managed adapter safely replaced after source rename",
+    "upstream defects disclosed while full canonical routes pass",
+    "adapter name collision rejected",
+    "local index missing skill rejected",
+    "existing evidence refused with exit 2 and original bytes preserved"
+  ],
+  "failure": null,
+  "scope": "Disposable fixtures inside game/.godot; real source files read only",
+  "script_sha256": {
+    "test-skill-tools.py": "d34db242278b02fdc501c6bef9cde8241e905e34b70d48315dd1e85c58bcc685",
+    "generate-skills.py": "a8328b9e443d52f8b384b7ae53c5b366d1cb7cf5ab5dfe2e23bed0a638b92e35",
+    "skill_catalog.py": "763ae498a5e06c03844812b18c3b51b87d1b14e6632ed1de1ffc6f32c1a9945f",
+    "validate-workspace.py": "bfabed00138933cc91ea1bf13f4390437b7b7461fe067d07de6edb0b41db5087"
+  }
+}

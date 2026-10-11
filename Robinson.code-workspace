@@ -7,6 +7,64 @@
   ],
   "settings": {
     "terminal.integrated.cwd": "${workspaceFolder}",
-    "window.title": "Robinson 正式主线${separator}${appName}"
+    "window.title": "Robinson 正式主线${separator}${appName}",
+    "files.watcherExclude": {
+      "**/.godot/**": true,
+      "**/workflow/vendor/**": true,
+      "**/workflow/skills/**": true
+    },
+    "search.exclude": {
+      "**/.godot/**": true,
+      "**/workflow/vendor/**": true,
+      "**/workflow/skills/**": true,
+      "**/.agents/skills/**": true,
+      "**/.codebuddy/skills/**": true
+    }
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Robinson: 初始化工作流",
+        "type": "process",
+        "command": "pwsh",
+        "args": ["-NoProfile", "-File", "${workspaceFolder}/workflow/scripts/setup-workspace.ps1"],
+        "options": {"cwd": "${workspaceFolder}"},
+        "problemMatcher": []
+      },
+      {
+        "label": "Robinson: 打开 Godot 编辑器",
+        "type": "process",
+        "command": "pwsh",
+        "args": ["-NoProfile", "-File", "${workspaceFolder}/workflow/scripts/open-game.ps1"],
+        "options": {"cwd": "${workspaceFolder}"},
+        "problemMatcher": []
+      },
+      {
+        "label": "Robinson: 运行游戏",
+        "type": "process",
+        "command": "pwsh",
+        "args": ["-NoProfile", "-File", "${workspaceFolder}/workflow/scripts/open-game.ps1", "-Run"],
+        "options": {"cwd": "${workspaceFolder}"},
+        "problemMatcher": []
+      },
+      {
+        "label": "Robinson: 完整回归",
+        "type": "process",
+        "command": "pwsh",
+        "args": ["-NoProfile", "-File", "${workspaceFolder}/workflow/scripts/run-tests.ps1"],
+        "options": {"cwd": "${workspaceFolder}"},
+        "group": {"kind": "test", "isDefault": true},
+        "problemMatcher": []
+      },
+      {
+        "label": "Robinson: 检查工作区",
+        "type": "process",
+        "command": "python",
+        "args": ["${workspaceFolder}/workflow/scripts/validate-workspace.py", "--require-native-links"],
+        "options": {"cwd": "${workspaceFolder}"},
+        "problemMatcher": []
+      }
+    ]
   }
 }
