@@ -1,6 +1,6 @@
 # Robinson
 
-第一人称生存游戏原型。当前主仓库已实现玩家移动、观察、跳跃、蹲伏和自动迈步；物品、拾取和背包成果仍在旧目录，尚未接入本工程。
+第一人称生存游戏原型。正式工程已整合玩家移动、观察、跳跃、蹲伏、自动迈步，以及物品、E 拾取和 Tab 背包界面。
 
 ## 开发入口
 
@@ -14,7 +14,7 @@ D:\GitProjiect\Godot\114514TheMostGreatServialGame
 
 在新窗口开始后续对话；旧窗口中的已有对话仍属于旧工作区，切勿依赖它自动切换工程。首次打开若出现工作区信任或 Godot MCP 项目批准提示，核对正式仓库后在 CodeBuddy 内确认。本机 `.mcp.json` 已保留原 Godot 配置，未纳入 Git；复制配置不等于已确认连接成功。
 
-`D:\Godot-AI-Lab` 用于历史资料和待移植成果来源；其中 `robinson` 工程不再作为日常开发入口。已有成果按模块验证和移植，不能用旧工程整目录覆盖本仓库。
+`D:\Godot-AI-Lab` 保留历史资料和旧工程备份；唯一日常开发入口为本仓库。迁移与清理记录见 [验证记录](docs/validation/2026-10-11-migration.md)。
 
 ## 运行
 
@@ -30,8 +30,18 @@ D:\GitProjiect\Godot\114514TheMostGreatServialGame
 | 蹲伏 | 按住 Ctrl，松开请求起身 |
 | 观察 | 鼠标移动 |
 | 捕获／释放鼠标 | Esc |
+| 拾取范围内最近物品 | E |
+| 打开／关闭背包 | Tab |
 
-主仓库尚未接入 E 拾取和 Tab 背包界面。
+出生点前方有两份木头和一份石头示例。靠近后按 E 拾取，Tab 查看数量；背包放不下整份物品时，物品留在地上。背包目前只读，打开时游戏继续运行。
+
+## 自动验证
+
+```powershell
+./tools/run-tests.ps1 -GodotPath 'D:/steam/steamapps/common/Godot Engine/godot.windows.opt.tools.64.exe'
+```
+
+按本机安装位置替换 Godot 路径。默认运行物品、背包、拾取、界面和移动基线五组测试，当前共 389 项断言通过；原始证据、边界及分组复跑方式见 [验证记录](docs/validation/2026-10-11-migration.md)。自动验证不代表真人手感验收，已知玩家问题仍见状态页。
 
 ## 文档分工
 

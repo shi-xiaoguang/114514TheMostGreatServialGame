@@ -1,0 +1,60 @@
+; Robinson —— 背包查看界面场景（任务编号 UI-01：背包查看系统）
+; 结构：InventoryUI(CanvasLayer) → InventoryPanel(PanelContainer) → VBox → Title / EmptyHint / ItemGrid。
+; 布局约定：面板停靠在屏幕左上角，固定 440 × 356 像素；网格列数由脚本的 columns 导出参数决定。
+; 交互约定：界面内不含任何可获焦点的控件（容器与标签的 focus_mode 默认均为 FOCUS_NONE），
+;           因此 Tab 不会被视口的 GUI 焦点导航截获，可以正常送达脚本的 _unhandled_input。
+; 说明：Godot 编辑器保存场景时会丢弃本文件内的 ; 注释，此现象不影响场景功能。
+
+[gd_scene load_steps=3 format=3]
+
+; 界面控制脚本：Tab 开关、订阅背包变更、逐堆渲染格子
+[ext_resource type="Script" path="res://scripts/ui/inventory_ui.gd" id="1_ui"]
+
+; 面板底色：半透明深色 + 细边框，避免遮挡画面时看不清文字，不加载任何外部贴图
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.1, 0.1, 0.12, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.45, 0.45, 0.5, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+
+; 界面根节点：CanvasLayer 使界面不受 3D 相机影响
+[node name="InventoryUI" type="CanvasLayer"]
+layer = 1
+script = ExtResource("1_ui")
+
+; 背包面板：初始隐藏，由脚本在 _ready 中显式设为不可见，并在按下 Tab 时切换
+[node name="InventoryPanel" type="PanelContainer" parent="."]
+visible = false
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 464.0
+offset_bottom = 380.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+; 纵向排列容器：依次放下标题、空背包提示与物品网格
+[node name="VBox" type="VBoxContainer" parent="InventoryPanel"]
+theme_override_constants/separation = 8
+
+; 标题标签：仅标识这是背包面板
+[node name="Title" type="Label" parent="InventoryPanel/VBox"]
+text = "背包"
+
+; 空背包提示：仅在物品堆数量为 0 时可见，属纯界面表现，不涉及数据层
+[node name="EmptyHint" type="Label" parent="InventoryPanel/VBox"]
+text = "暂无物品"
+
+; 物品网格：每个物品堆对应一个 inventory_slot.tscn 实例，列数由脚本统一设置
+[node name="ItemGrid" type="GridContainer" parent="InventoryPanel/VBox"]
+columns = 5
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6

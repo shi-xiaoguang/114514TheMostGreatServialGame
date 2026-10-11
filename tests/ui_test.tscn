@@ -1,0 +1,21 @@
+; Robinson —— UI-01 无头验证场景（测试专用，非生产内容，不参与正式游玩流程）
+; 结构：根节点 UITest 挂载测试驱动脚本；唯一子节点是 movement_test.tscn 的实例，
+;       因此被测的是正式入口中的真实背包界面实例（含玩家、地面与光照）。
+; 执行方式：godot --headless --path <工程目录> res://tests/ui_test.tscn
+; 说明：测试采用"运行场景"而非 --script，原因是 --script 启动时编译期解析不到 Autoload 标识符。
+; 注：Godot 编辑器保存场景时会丢弃本文件内的 ; 注释，此现象不影响场景功能。
+
+[gd_scene load_steps=3 format=3]
+
+; 测试驱动脚本：注入 Tab 按键、改动数据层、核对界面刷新并输出 PASS/FAIL
+[ext_resource type="Script" path="res://tests/ui_driver.gd" id="1_driver"]
+
+; 被测场景：与正式游戏入口完全同一份文件（其中已含背包界面实例）
+[ext_resource type="PackedScene" path="res://scenes/movement_test.tscn" id="2_world"]
+
+; 测试根节点：脚本在 _ready 中启动完整验证流程
+[node name="UITest" type="Node"]
+script = ExtResource("1_driver")
+
+; 世界场景实例：提供地面、光照、玩家、可拾取物与背包界面
+[node name="World" parent="." instance=ExtResource("2_world")]

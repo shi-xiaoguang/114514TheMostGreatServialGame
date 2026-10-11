@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory = $true)][string]$GodotPath,
-    [ValidateSet('data', 'interaction', 'ui', 'movement', 'all')][string]$Suite = 'data'
+    [ValidateSet('data', 'interaction', 'ui', 'movement', 'all')][string]$Suite = 'all'
 )
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
@@ -47,5 +47,9 @@ if ($Suite -in @('ui', 'all')) {
 }
 if ($Suite -in @('movement', 'all')) {
     Invoke-Check 'movement' @('res://tests/movement_test.tscn', '--fixed-fps', '60', '--quit-after', '1800') 'MOVEMENT-BASELINE'
+}
+if ($Suite -eq 'all') {
+    Invoke-Check 'main-smoke' @('--fixed-fps', '60', '--quit-after', '240')
+    Invoke-Check 'world-smoke' @('res://scenes/world.tscn', '--fixed-fps', '60', '--quit-after', '120')
 }
 Write-Output "Suite '$Suite' passed. Logs: $logRoot"
